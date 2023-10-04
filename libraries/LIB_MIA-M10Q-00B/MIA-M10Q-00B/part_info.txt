@@ -1,0 +1,9 @@
+Manufacturer=U-Blox
+PartNumber=MIA-M10Q-00B
+PartCategory=Integrated Circuit
+PackageCategory=Other
+PinCount=53
+Version=1.13
+Released=2022-12-06 06:32:04
+Downloaded=2023-10-04 10:43:51
+3D=Y

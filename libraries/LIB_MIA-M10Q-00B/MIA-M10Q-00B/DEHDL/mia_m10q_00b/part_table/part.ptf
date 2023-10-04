@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'MIA_M10Q_00B'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "U-Blox", "MIA-M10Q-00B" (!) = "", "MIAM10Q00B", "Other", "377-MIA-M10Q-00B", "https://www.mouser.co.uk/ProductDetail/u-blox/MIA-M10Q-00B?qs=4ASt3YYao0VBtAexfwtW5Q%3D%3D", "u-blox M10 GNSS System-in-Package ROM, TCXO, SAW, LNA, 1.8/3V 4.5 x 4.5 mm, S-LGA 53,", "https://content.u-blox.com/sites/default/files/documents/MIA-M10Q_DataSheet_UBX-22015849.pdf", "1.045 mm"
+END_PART
+
+END.

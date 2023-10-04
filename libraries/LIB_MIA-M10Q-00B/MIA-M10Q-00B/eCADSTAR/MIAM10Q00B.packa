@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "MIA-M10Q-00B"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2022-12-06-06:32:04)
+    (mountForm default
+        (footprintRef "MIAM10Q00B")
+        (spec "System")
+    )
+)

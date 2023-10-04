@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "MIAM10Q00B"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "MIAM10Q00B")
+        (spec "default")
+    )
+)
