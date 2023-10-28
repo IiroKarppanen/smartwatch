@@ -18,4 +18,5 @@
   (lib (name "W3010")(type "KiCad")(uri "${KIPRJMOD}/libraries/W3010/W3010.kicad_sym")(options "")(descr ""))
   (lib (name "NRF52833-QDAA-R7")(type "KiCad")(uri "${KIPRJMOD}/libraries/NRF52833-QDAA-R7/NRF52833-QDAA-R7.kicad_sym")(options "")(descr ""))
   (lib (name "CAM-M8C")(type "KiCad")(uri "${KIPRJMOD}/libraries/CAM_M8C_0/KiCADv6/CAM-M8C.kicad_sym")(options "")(descr ""))
+  (lib (name "DS1302Z+T&R")(type "KiCad")(uri "${KIPRJMOD}/libraries/DS1302Z_T_R/KiCADv6/DS1302Z+T&R.kicad_sym")(options "")(descr ""))
 )
