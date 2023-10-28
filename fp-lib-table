@@ -19,4 +19,6 @@
   (lib (name "KiCad")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIB_MIA-M10Q-00B/MIA-M10Q-00B/KiCad")(options "")(descr ""))
   (lib (name "W3010")(type "KiCad")(uri "${KIPRJMOD}/libraries/W3010")(options "")(descr ""))
   (lib (name "NRF52832-QFAA-R")(type "KiCad")(uri "${KIPRJMOD}/libraries/NRF52832-QFAA-R/NRF52832-QFAA-R.pretty")(options "")(descr ""))
+  (lib (name "NRF52833-QDAA-R7")(type "KiCad")(uri "${KIPRJMOD}/libraries/NRF52833-QDAA-R7")(options "")(descr ""))
+  (lib (name "CAM-M8C")(type "KiCad")(uri "${KIPRJMOD}/libraries/CAM_M8C_0/KiCADv6/CAM-M8C.pretty")(options "")(descr ""))
 )
