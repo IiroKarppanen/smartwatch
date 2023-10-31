@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NORA-B120-00B
+D Bluetooth Modules - 802.15.1 nRF5340, PA/LNA, U.FL connector, open CPU
+K
+F https://content.u-blox.com/sites/default/files/NORA-B1_DataSheet_UBX-20027119.pdf
+$ENDCMP
+#
+#End Doc Library
