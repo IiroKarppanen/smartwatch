@@ -24,4 +24,5 @@
   (lib (name "NORA-B120-00B")(type "KiCad")(uri "${KIPRJMOD}/libraries/NORA-B120-00B/NORA-B120-00B.kicad_sym")(options "")(descr ""))
   (lib (name "S6B_XH_SM4_TB")(type "KiCad")(uri "${KIPRJMOD}/libraries/S6B_XH_SM4_TB/KiCADv6/S6B_XH_SM4_TB.kicad_sym")(options "")(descr ""))
   (lib (name "MAX17048G_T10")(type "KiCad")(uri "${KIPRJMOD}/libraries/MAX17048G_T10/KiCADv6/MAX17048G_T10.kicad_sym")(options "")(descr ""))
+  (lib (name "W25N01GVZEIG_TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/W25N01GVZEIG_TR/W25N01GVZEIG_TR/W25N01GVZEIG_TR.kicad_sym")(options "")(descr ""))
 )
