@@ -6384,7 +6384,7 @@
     (property "Reference" "R2" (at 377.9256 56.4349 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "22" (at 378.014 58.4904 90)
+    (property "Value" "100" (at 378.014 58.4904 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 378.0231 60.285 90)
