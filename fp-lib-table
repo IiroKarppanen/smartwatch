@@ -28,4 +28,5 @@
   (lib (name "S6B_XH_SM4_TB")(type "KiCad")(uri "${KIPRJMOD}/libraries/S6B_XH_SM4_TB/KiCADv6/S6B_XH_SM4_TB.pretty")(options "")(descr ""))
   (lib (name "MAX17048G_T10")(type "KiCad")(uri "${KIPRJMOD}/libraries/MAX17048G_T10/KiCADv6/MAX17048G_T10.pretty")(options "")(descr ""))
   (lib (name "W25N01GVZEIG_TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/W25N01GVZEIG_TR/W25N01GVZEIG_TR")(options "")(descr ""))
+  (lib (name "RV_3028_C7_32_768KHZ_1PPM_TA_QC")(type "KiCad")(uri "${KIPRJMOD}/libraries/RV_3028_C7_32_768KHZ_1PPM_TA_QC")(options "")(descr ""))
 )
