@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "LM66200DRLR"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2021-06-10-07:24:06)
+    (mountForm default
+        (footprintRef "SOTFL50P160X60-8N")
+        (spec "System")
+    )
+)

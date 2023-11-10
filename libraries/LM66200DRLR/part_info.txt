@@ -1,0 +1,9 @@
+Manufacturer=Texas Instruments
+PartNumber=LM66200DRLR
+PartCategory=Integrated Circuit
+PackageCategory=SO Transistor Flat Lead
+PinCount=8
+Version=2.1
+Released=2021-11-21 07:16:15
+Downloaded=2023-11-07 14:06:18
+3D=Y

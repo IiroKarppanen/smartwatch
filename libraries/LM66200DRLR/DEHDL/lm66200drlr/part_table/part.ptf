@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'LM66200DRLR'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Texas Instruments", "LM66200DRLR" (!) = "", "SOTFL50P160X60-8N", "SO Transistor Flat Lead", "595-LM66200DRLR", "https://www.mouser.co.uk/ProductDetail/Texas-Instruments/LM66200DRLR?qs=Rp5uXu7WBW90hnpZAkIOdQ%3D%3D", "1.6-V to 5.5-V, 40-m, 2.5-A, low-IQ, dual ideal diode", "https://www.ti.com/lit/gpn/lm66200", "0.6 mm"
+END_PART
+
+END.

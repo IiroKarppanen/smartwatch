@@ -1,0 +1,16 @@
+.LM66200DRLR :1 ;1.6-V to 5.5-V, 40-m, 2.5-A, low-IQ, dual ideal diode
+SOTFL50P160X60-8N
+*STM IC
+*NGS
+*PLB 1="GND_1" 2="VOUT_1" 3="VIN1" 4="'ON'" 5="GND_2" 6="VIN2" 7="VOUT_2" 8="ST"
+*MXP 8
+*DFN LM66200DRLR
+~!Mouser Part Number (595-LM66200DRLR)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Texas-Instruments/LM66200DRLR?qs=Rp5uXu7WBW90hnpZAkIOdQ%3D%3D)
+~!Manufacturer_Name (Texas Instruments)
+~!Manufacturer_Part_Number (LM66200DRLR)
+~!Link Datasheet (https://www.ti.com/lit/gpn/lm66200)
+~!Height (0.6mm)
+~!3D_Model (LM66200DRLR)
+LM66200DRLR
+1.1!U 2.1!U 3.1!U 4.1!U 5.1!U 6.1!U 7.1!U 8.1!U 
