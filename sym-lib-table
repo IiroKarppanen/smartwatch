@@ -28,4 +28,5 @@
   (lib (name "RV-3028-C7_32.768KHZ_1PPM-TA-QC")(type "KiCad")(uri "${KIPRJMOD}/libraries/RV_3028_C7_32_768KHZ_1PPM_TA_QC/RV-3028-C7_32.768KHZ_1PPM-TA-QC.kicad_sym")(options "")(descr ""))
   (lib (name "LM66200DRLR")(type "KiCad")(uri "${KIPRJMOD}/libraries/LM66200DRLR/KiCad/LM66200DRLR.kicad_sym")(options "")(descr ""))
   (lib (name "TPS63001DRCR")(type "KiCad")(uri "${KIPRJMOD}/libraries/TPS63001DRCR/TPS63001DRCR.kicad_sym")(options "")(descr ""))
+  (lib (name "AP7313-18SAG-7")(type "KiCad")(uri "${KIPRJMOD}/libraries/AP7313-18SAG-7/AP7313-18SAG-7.kicad_sym")(options "")(descr ""))
 )
