@@ -32,4 +32,5 @@
   (lib (name "LM66200DRLR")(type "KiCad")(uri "${KIPRJMOD}/libraries/LM66200DRLR/LM66200DRLR")(options "")(descr ""))
   (lib (name "TPS63001DRCR")(type "KiCad")(uri "${KIPRJMOD}/libraries/TPS63001DRCR/TPS63001DRCR.pretty")(options "")(descr ""))
   (lib (name "AP7313-18SAG-7")(type "KiCad")(uri "${KIPRJMOD}/libraries/AP7313-18SAG-7/AP7313-18SAG-7")(options "")(descr ""))
+  (lib (name "TPS63031DSKR")(type "KiCad")(uri "${KIPRJMOD}/libraries/TPS63031DSKR/TPS63031DSKR.pretty")(options "")(descr ""))
 )
