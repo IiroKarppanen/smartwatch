@@ -1,0 +1,33 @@
+SCHEMA SIGNALS
+accelometer - done
+display - done
+flash - done
+gps - done
+hr - done 
+rtc - done
+gauge - done
+
+
+SIGNAL TRACES
+accelometer - done
+display - done
+flash - done
+gps - done
+hr - done
+rtc - done
+gauge - done
+
+
+CHECKLIST
+display - done
+inductor - done
+resistors - done
+signals - done
+charging circuit - done 
+swd - done
+gnd pins - done  
+crystals - done
+radio gnd keepout - done
+components rotation dots - done
+
+DRC - done
