@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "typeinfo": "c",
+        "accelometer.h": "c",
+        "gc9a01a.h": "c",
+        "display_gc9a01a.h": "c",
+        "random": "c"
+    },
+    "files.watcherExclude": {
+        "**/target": true
+    }
+}
