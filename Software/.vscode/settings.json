@@ -9,5 +9,8 @@
     },
     "files.watcherExclude": {
         "**/target": true
+    },
+    "nrf-connect.debugging.bindings": {
+        "${workspaceFolder}/build": "Launch build"
     }
 }

@@ -67,21 +67,23 @@ void main(void){
     k_sleep(K_SECONDS(3));
     toggle_backlight();
 
-    lcd_spi_init();
-    GC9A01_init();
-    struct GC9A01_frame frame = {{45, 45}, {239, 239}};
-    GC9A01_set_frame(frame);
-
-    GC9A01_fill_rect(10, 20, 30, 40, 0xF800); // Draw a red filled rectangle at (10, 20) with dimensions 30x40 pixels
 
 	while (1) {
 
-		k_sleep(K_SECONDS(4));
+		k_sleep(K_SECONDS(5));
 
         printk("---\n");
-        printk("Display init");
+        printk("- Display init -\n");
 
-        GC9A01_draw_line(MAGENTA, 220, 50, 150, 240);
+        lcd_spi_init();
+        GC9A01_init();
+        struct GC9A01_frame frame = {{45, 45}, {239, 239}};
+        GC9A01_set_frame(frame);
+        GC9A01_fill_rect(10, 20, 30, 40, 0xF800); // Draw a red filled rectangle at (10, 20) with dimensions 30x40 pixels
+
+        printk("Display complete\n");
+
+        //GC9A01_draw_line(MAGENTA, 220, 50, 150, 240);
     }
 
 }

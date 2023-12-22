@@ -55,7 +55,7 @@ void GC9A01_spi_tx(uint8_t *data, size_t len) {
 
     int result = spi_write(spi_dev, &spi_cfg, &tx_buf);
     if (result != 0) {
-        LOG_ERR("SPI write failed with error code %d", result);
+        printk("SPI write failed with error code %d", result);
     } 
 }
 
@@ -94,17 +94,17 @@ void GC9A01_write_continue(uint8_t *data, size_t len) {
 void lcd_spi_init(void) {
     spi_dev = device_get_binding(DT_LABEL(DT_NODELABEL(spi3)));
     if (!spi_dev) {
-        LOG_ERR("SPI device not found");
+        printk("SPI device not found");
         return;
     }
 
+    printk(" - Beginning SPI init - ");
     /* GPIO for display */
-    gpio_pin_configure(device_get_binding(GPI1), LCD_RES_Pin, GPIO_OUTPUT_ACTIVE);
-    gpio_pin_configure(device_get_binding(GPIO), LCD_CS_Pin, GPIO_OUTPUT_ACTIVE);
-    gpio_pin_configure(device_get_binding(GPIO), LCD_DC_Pin, GPIO_OUTPUT_ACTIVE);
-    LOG_INF(" - SPI init successfull! - ");
+    gpio_pin_configure(device_get_binding(GPI1), LCD_RES_Pin, GPIO_OUTPUT_LOW);
+    gpio_pin_configure(device_get_binding(GPIO), LCD_CS_Pin, GPIO_OUTPUT_LOW);
+    gpio_pin_configure(device_get_binding(GPIO), LCD_DC_Pin, GPIO_OUTPUT_LOW);
+    printk(" - SPI init successfull! - ");
 }
-
 
 void GC9A01_init(void) {
     
@@ -115,7 +115,7 @@ void GC9A01_init(void) {
     RESET_ON;
     k_sleep(K_MSEC(120));
 
-    LOG_INF(" - Display Reset - ");
+    printk(" - Display Reset - ");
     
     /* Initial Sequence */ 
     
@@ -361,7 +361,7 @@ void GC9A01_init(void) {
     GC9A01_write_command(0x29);
     k_sleep(K_MSEC(20));
 
-    LOG_INF(" - GC9A01 INIT COMPLETE! - ");
+    printk(" - GC9A01 INIT COMPLETE! - ");
     
 }
 
@@ -537,3 +537,6 @@ void GC9A01_fill_circle(int16_t x, int16_t y, int16_t radius,
     }
 
 }
+
+
+

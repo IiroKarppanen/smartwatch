@@ -1,0 +1,6 @@
+- make decision on pogo pins
+- select memory type
+- choose which sensors to include
+- drop hr module?
+
+- Route pcb
