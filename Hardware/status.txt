@@ -1,6 +1,3 @@
-- make decision on pogo pins
-- select memory type
-- choose which sensors to include
-- drop hr module?
-
-- Route pcb
+- sort out i2c voltage
+- double check every functionality seperately
+- routing can happen only after radius is set (pending test displays)

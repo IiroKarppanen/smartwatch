@@ -35,4 +35,5 @@
   (lib (name "BMI270")(type "KiCad")(uri "${KIPRJMOD}/libraries/BMI270/BMI270.kicad_sym")(options "")(descr ""))
   (lib (name "LIS2MDLTR")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIS2MDLTR/LIS2MDLTR.kicad_sym")(options "")(descr ""))
   (lib (name "MEM2075-00-140-01-A")(type "KiCad")(uri "${KIPRJMOD}/libraries/MEM2075_00_140_01_A/MEM2075-00-140-01-A.kicad_sym")(options "")(descr ""))
+  (lib (name "78171-0002")(type "KiCad")(uri "${KIPRJMOD}/libraries/78171-0002/78171-0002.kicad_sym")(options "")(descr ""))
 )
