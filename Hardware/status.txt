@@ -1,3 +1,12 @@
-- sort out i2c voltage
-- double check every functionality seperately
-- routing can happen only after radius is set (pending test displays)
+
+check list
+- hr sensor - DONE
+- accelometer - DONE
+- magnetometer - DONE
+- flash - DONE
+- esd - DONE
+- gauge - DONE (works correctly)
+- gps module - need physical testing before any decision
+- display - need to decide display type
+
+Routing happens after check list complete
