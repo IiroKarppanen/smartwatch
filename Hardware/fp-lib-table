@@ -38,4 +38,5 @@
   (lib (name "BMI270")(type "KiCad")(uri "${KIPRJMOD}/libraries/BMI270")(options "")(descr ""))
   (lib (name "LIS2MDLTR")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIS2MDLTR")(options "")(descr ""))
   (lib (name "MEM2075_00_140_01_A")(type "KiCad")(uri "${KIPRJMOD}/libraries/MEM2075_00_140_01_A")(options "")(descr ""))
+  (lib (name "2994TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/2994TR")(options "")(descr ""))
 )

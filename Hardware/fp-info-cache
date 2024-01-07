@@ -1,4 +1,4 @@
-21816895107575200
+21813727883054981
 2N7002
 SOT-23TO-236_318-08_ONS
 
@@ -20,20 +20,13 @@ SOT-23TO-236_318-08_ONS-M
 0
 3
 3
-54548-2271
-MOLEX_54548-2271
+2994TR
+BAT_2994TR
 
 
 0
-24
-24
-78171-0002
-78171-0002
-78171-0002
-Connector
-0
-4
-4
+3
+3
 AP2112K-3-3TRG1
 SOT_RG1_DIO
 
@@ -51547,13 +51540,6 @@ DF37NB-24DS-0.4V51
 0
 26
 26
-DF40C-100DS-0.4V_51_
-HRS_DF40C-100DS-0.4V(51)
-
-
-0
-100
-100
 DS1302Z+T&R
 21-0041B_8_MXM
 
@@ -61039,6 +61025,13 @@ CONN_502244-1530_MOL
 0
 19
 19
+MP28167GQ-P
+QFN-16_MP28167GQ_MNP
+
+MP28167GQ-P 
+0
+16
+16
 Module
 A20_OLINUXINO_LIME2
 A20 Olinuxino LIME2, 1.2GHz, 512-1024MB RAM, Micro-SD, NAND or eMMC, 1000Mbit Ethernet
@@ -79386,20 +79379,6 @@ TO-264-5 Vertical RM 3.81mm
 0
 5
 5
-Pogo_Female_2pin
-Pogo_Female_2Pin
-Capacitor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator
-capacitor
-0
-2
-2
-Pogo_Female_4pin
-Pogo_Female_4Pin
-Capacitor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator
-capacitor
-0
-4
-4
 Potentiometer_SMD
 Potentiometer_ACP_CA6-VSMD_Vertical
 Potentiometer, vertical, ACP CA6-VSMD, http://www.acptechnologies.com/wp-content/uploads/2017/06/01-ACP-CA6.pdf
@@ -90628,3 +90607,10 @@ CON_522712079_MOL
 0
 22
 22
+power_pad
+power_pad_5mm
+
+
+0
+1
+1
