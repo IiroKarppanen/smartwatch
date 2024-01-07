@@ -1,4 +1,4 @@
-21815191600554883
+21816895107575200
 2N7002
 SOT-23TO-236_318-08_ONS
 
@@ -27,6 +27,13 @@ MOLEX_54548-2271
 0
 24
 24
+78171-0002
+78171-0002
+78171-0002
+Connector
+0
+4
+4
 AP2112K-3-3TRG1
 SOT_RG1_DIO
 
@@ -79392,7 +79399,7 @@ Capacitor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 no
 capacitor
 0
 4
-2
+4
 Potentiometer_SMD
 Potentiometer_ACP_CA6-VSMD_Vertical
 Potentiometer, vertical, ACP CA6-VSMD, http://www.acptechnologies.com/wp-content/uploads/2017/06/01-ACP-CA6.pdf
