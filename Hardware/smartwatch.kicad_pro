@@ -34,9 +34,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.0,
-          "height": 0.55,
-          "width": 0.55
+          "drill": 2.2,
+          "height": 2.2,
+          "width": 2.2
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -45,7 +45,7 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.0
+          "min_clearance": 0.127
         }
       },
       "diff_pair_dimensions": [
@@ -55,7 +55,14 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "malformed_courtyard|159580000|92994998|c41258dc-7d38-4a1e-9ee1-fa22226c4a93|00000000-0000-0000-0000-000000000000",
+        "malformed_courtyard|159745001|92830000|c41258dc-7d38-4a1e-9ee1-fa22226c4a93|00000000-0000-0000-0000-000000000000",
+        "malformed_courtyard|174284999|105350000|e3d1a8b1-90bf-4922-9b91-4399879f112c|00000000-0000-0000-0000-000000000000",
+        "malformed_courtyard|174450000|105185002|e3d1a8b1-90bf-4922-9b91-4399879f112c|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|164773000|84540800|d8347180-3d6e-4108-ba69-cdd6ab8a3320|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|166160712|115534999|b350f0e1-0f3c-4cdf-aeaa-8b666756a476|00000000-0000-0000-0000-000000000000"
+      ],
       "meta": {
         "version": 2
       },
@@ -468,7 +475,7 @@
       "idf": "",
       "netlist": "./",
       "specctra_dsn": "",
-      "step": "../../../Downloads/smartwatch.step",
+      "step": "smartwatch.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -498,7 +505,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "schematic",
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
     "spice_model_current_sheet_as_root": true,
