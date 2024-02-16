@@ -5,12 +5,19 @@
         "accelometer.h": "c",
         "gc9a01a.h": "c",
         "display_gc9a01a.h": "c",
-        "random": "c"
+        "random": "c",
+        "kernel.h": "c",
+        "device.h": "c",
+        "policy.h": "c",
+        "pm.h": "c",
+        "printk.h": "c"
     },
     "files.watcherExclude": {
         "**/target": true
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
-    }
+    },
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.5.0}",
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.5.0}"
 }

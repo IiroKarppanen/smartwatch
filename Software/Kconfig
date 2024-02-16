@@ -1,0 +1,33 @@
+menu "Zephyr Kernel"
+    source "Kconfig.zephyr"
+endmenu
+
+menu "ZSWatch"
+    config ZSWATCH_PCB_REV
+        int
+    prompt "ZSWatch PCB revision"
+    default 3
+
+
+    menu "Default configuration"
+        menu "Sensors Summary"
+            depends on APPLICATIONS_USE_SENSORS_SUMMARY
+
+            config DEFAULT_CONFIGURATION_SENSORS_SUMMARY_REFRESH_INTERVAL_MS
+                int
+            prompt "Refresh interval in milliseconds"
+            default 100
+        endmenu
+    endmenu
+
+    menu "ZSWatch Init Priorities"
+    config ZSW_DRIVER_INIT_PRIORITY
+        int
+        default 85
+    endmenu
+
+    menu "Custom drivers"
+        rsource "drivers/Kconfig"
+    endmenu
+
+endmenu

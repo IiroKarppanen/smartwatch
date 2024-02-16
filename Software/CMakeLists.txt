@@ -1,16 +1,20 @@
-# SPDX-License-Identifier: Apache-2.0
-
 cmake_minimum_required(VERSION 3.20.0)
 
+set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(Software)
 
-FILE(GLOB app_sources src/*.c)
-target_sources(app PRIVATE
-  ${app_sources}
-  src/display/gc9a01.c
+#list(APPEND ZEPHYR_EXTRA_MODULES
+#  ${CMAKE_CURRENT_SOURCE_DIR}/drivers/display/gc9a01
+#  )
+
+add_subdirectory(drivers)
+include_directories(src/)
+
+target_sources(app PRIVATE 
+src/main.c
+drivers/display/gc9a01/gc9a01.c
 )
 
-# zephyr_library_include_directories(${ZEPHYR_BASE}/samples/bluetooth)
 
 

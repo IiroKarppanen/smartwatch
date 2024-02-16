@@ -1,89 +1,74 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdint.h>
-#include <sys/printk.h>
-#include <sys/byteorder.h>
-#include <zephyr.h>
-#include <drivers/i2c.h>
-#include <drivers/sensor.h>
-#include <devicetree.h>
+#include <zephyr/sys/printk.h>
 #include <SEGGER_RTT.h>
-#include <device.h>
-#include <zephyr/types.h>
-#include <drivers/gpio.h>
-#include "display/gc9a01.h"
+#include <zephyr/drivers/spi.h>
+#include <zephyr/drivers/sensor.h>
+#include "gc9a01.h"
 
-#define GPIO DT_LABEL(DT_NODELABEL(gpio0))
-#define BACKLIGHT_PIN 7
-
-
-void toggle_backlight(void){
-
-	const struct device *dev;
-
-    dev = device_get_binding(GPIO);
-    if (dev == NULL) {
-        printk("Error: Could not get GPIO device\n");
-        return;
-    }
-
-	k_sleep(K_SECONDS(3));
-
-    gpio_pin_configure(dev, BACKLIGHT_PIN, GPIO_OUTPUT);
-
-	printk("BACKLIGHT ON\n");
-    gpio_pin_set(dev, BACKLIGHT_PIN, 1);
-}
-
-
-static void draw_arrow(int16_t angle, uint8_t lineLen,
-		uint16_t color) {
-    /* old */
-    int16_t old_angel = (angle - 1) * 6 - 90;
-    float old_angleRad = (float)old_angel * 3.14159265 / 180;
-    int start_old_x = cos(old_angleRad) * 50 + 120;
-    int start_old_y = sin(old_angleRad) * 50 + 120;
-    int end_old_x = cos(old_angleRad) * lineLen + 120;
-    int end_old_y = sin(old_angleRad) * lineLen + 120;
-    GC9A01_draw_line(WHITE, start_old_x, start_old_y, end_old_x, end_old_y);
-    
-    /* new */
-    angle = angle * 6 - 90;
-    float angleRad = (float)angle * 3.14159265 / 180;
-    int start_x = cos(angleRad) * 50 + 120;
-    int start_y = sin(angleRad) * 50 + 120;
-    int end_x = cos(angleRad) * lineLen + 120;
-    int end_y = sin(angleRad) * lineLen + 120;
-    GC9A01_draw_line(color, start_x, start_y, end_x, end_y);
-}
-
-
+const struct device *display = DEVICE_DT_GET_ANY(gc9a01);
 
 void main(void){
 
     SEGGER_RTT_Init();
 	printk("RTT LOG\n\n");
-
     k_sleep(K_SECONDS(3));
-    toggle_backlight();
 
 
 	while (1) {
 
 		k_sleep(K_SECONDS(5));
-
         printk("---\n");
-        printk("- Display init -\n");
 
-        lcd_spi_init();
-        GC9A01_init();
-        struct GC9A01_frame frame = {{45, 45}, {239, 239}};
-        GC9A01_set_frame(frame);
-        GC9A01_fill_rect(10, 20, 30, 40, 0xF800); // Draw a red filled rectangle at (10, 20) with dimensions 30x40 pixels
-
-        printk("Display complete\n");
-
-        //GC9A01_draw_line(MAGENTA, 220, 50, 150, 240);
     }
 
 }
+
+
+/*
+&spi1  {
+	status = "okay";
+	compatible = "nordic,nrf-spi";
+	pinctrl-0 = <&spi1_default>;
+	pinctrl-1 = <&spi1_sleep>;
+	pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+
+	gc9a01: gc9a01@0 {
+		compatible = "jak,gc9a01";
+		status = "okay";
+		spi-max-frequency = <8000000>;
+		reg = <0>;
+		width = <240>;
+		label = "jak_gc9a01";
+		height = <240>;
+		bl-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+		dc-gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&i2c2 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c2_default>;
+	pinctrl-1 = <&i2c2_sleep>;
+	pinctrl-names = "default", "sleep";
+	clock-frequency = <100000>;
+	max17048:max17048@36 {
+		compatible = "maxim,max17048";
+		reg = <0x36>;
+	};
+	lis2dh@19 {
+        compatible = "st,lis2dh";
+        reg = <0x19>;
+        label = "LIS2DH";
+    };
+	rtc@36 {
+        compatible = "st,lis2dh";
+        reg = <0x36>;
+        label = "RV-3028-C7";
+    };
+};
+*/
