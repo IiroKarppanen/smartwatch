@@ -45,17 +45,5 @@ int gc9a01_set_pixel_format(const struct device *dev, const enum display_pixel_f
 int gc9a01_controller_init(const struct device *dev);
 int gc9a01_init(const struct device *dev);
 int gc9a01_pm_action(const struct device *dev, enum pm_device_action action);
-
-struct display_driver_api gc9a01_driver_api = {
-    .blanking_on = gc9a01_blanking_on,
-    .blanking_off = gc9a01_blanking_off,
-    .write = gc9a01_write,
-    .read = gc9a01_read,
-    .get_framebuffer = gc9a01_get_framebuffer,
-    .set_brightness = gc9a01_set_brightness,
-    .set_contrast = gc9a01_set_contrast,
-    .get_capabilities = gc9a01_get_capabilities,
-    .set_pixel_format = gc9a01_set_pixel_format,
-    .set_orientation = gc9a01_set_orientation,
-};
+void display_test(const struct device *dev);
 

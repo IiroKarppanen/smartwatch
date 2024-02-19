@@ -8,12 +8,13 @@ project(Software)
 #  ${CMAKE_CURRENT_SOURCE_DIR}/drivers/display/gc9a01
 #  )
 
-add_subdirectory(drivers)
+#add_subdirectory(drivers)
 include_directories(src/)
 
 target_sources(app PRIVATE 
 src/main.c
-drivers/display/gc9a01/gc9a01.c
+src/drivers/gc9a01/gc9a01.c
+#src/drivers/rtc/rtc.c
 )
 
 

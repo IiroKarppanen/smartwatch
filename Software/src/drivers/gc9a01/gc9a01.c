@@ -16,7 +16,6 @@
 #include <zephyr/sys/printk.h>
 #include "gc9a01.h"
 
-
 #define GC9A01_SPI_PROFILING
 
 /**
@@ -243,7 +242,7 @@ int gc9a01_write(const struct device *dev, const uint16_t x, const uint16_t y,
     stop_time = k_cycle_get_32();
     cycles_spent = stop_time - start_time;
     nanoseconds_spent = k_cyc_to_ns_ceil32(cycles_spent);
-    printk("%d =>: %dns", len, nanoseconds_spent);
+    //printk("%d =>: %dns", len, nanoseconds_spent);
 #endif
     __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_SUSPEND) == 0, "Failed suspend SPI Bus");
     return 0;
@@ -308,7 +307,6 @@ int gc9a01_controller_init(const struct device *dev)
     const uint8_t *addr;
     const struct gc9a01_config *config = dev->config;
 
-    printk("Initialize GC9A01 controller");
     gpio_pin_set_dt(&config->reset_gpio, 0);
     k_msleep(5);
     gpio_pin_set_dt(&config->reset_gpio, 1);
@@ -329,13 +327,21 @@ int gc9a01_controller_init(const struct device *dev)
     }
 
     __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_SUSPEND) == 0, "Failed suspend SPI Bus");
+
+    frame.start.X = 0;
+    frame.end.X = 240;
+    frame.start.Y = 0;
+    frame.end.Y = 240;
+    gc9a01_set_frame(dev, frame);
+
+    printk("Initialization complete!\n");
+
     return 0;
 }
 
 int gc9a01_init(const struct device *dev)
 {
     const struct gc9a01_config *config = dev->config;
-    printk("");
 
     if (!device_is_ready(config->reset_gpio.port)) {
         printk("Reset GPIO device not ready");
@@ -405,6 +411,62 @@ const struct gc9a01_config gc9a01_config = {
     .dc_gpio = GPIO_DT_SPEC_INST_GET(0, dc_gpios),
     .bl_gpio = GPIO_DT_SPEC_INST_GET(0, bl_gpios),
 };
+
+struct display_driver_api gc9a01_driver_api = {
+    .blanking_on = gc9a01_blanking_on,
+    .blanking_off = gc9a01_blanking_off,
+    .write = gc9a01_write,
+    .read = gc9a01_read,
+    .get_framebuffer = gc9a01_get_framebuffer,
+    .set_brightness = gc9a01_set_brightness,
+    .set_contrast = gc9a01_set_contrast,
+    .get_capabilities = gc9a01_get_capabilities,
+    .set_pixel_format = gc9a01_set_pixel_format,
+    .set_orientation = gc9a01_set_orientation,
+};
+
+
+void display_test(const struct device *dev){
+
+    printk("Begin display test\n");
+
+    // Checkerboard
+    uint8_t color[3];
+
+    struct display_buffer_descriptor desc = {
+                .buf_size = sizeof(color),
+                .height = 240,
+                .width = 240,
+                .pitch = 2,
+    };
+
+    for (int x = 0; x < 240; x++) {
+        for (int y = 0; y < 240; y++) {
+            if ((x / 10) % 2 ==  (y / 10) % 2) {
+                color[0] = 0xFF;
+                color[1] = 0xFF;
+                color[2] = 0xFF;
+            } else {
+                color[0] = 0x00;
+                color[1] = 0x00;
+                color[2] = 0x00;
+            }
+
+            struct spi_buf buf = {.buf = color, .len = sizeof(color)};
+
+            if (x == 0 && y == 0) {
+                gc9a01_write_cmd(dev, MEM_WR, NULL, 0);
+                gc9a01_write(dev, 0, 0, &desc, &buf);
+            } else {
+                gc9a01_write_cmd(dev, MEM_WR_CONT, NULL, 0);
+                gc9a01_write(dev, 0, 0, &desc, &buf);
+            }
+        }
+    }
+
+    printk("Display test\n");
+
+}
 
 
 PM_DEVICE_DT_INST_DEFINE(0, gc9a01_pm_action);

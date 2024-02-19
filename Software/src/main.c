@@ -5,7 +5,7 @@
 #include <SEGGER_RTT.h>
 #include <zephyr/drivers/spi.h>
 #include <zephyr/drivers/sensor.h>
-#include "gc9a01.h"
+#include "drivers/gc9a01/gc9a01.h"
 
 const struct device *display = DEVICE_DT_GET_ANY(gc9a01);
 
@@ -15,10 +15,15 @@ void main(void){
 	printk("RTT LOG\n\n");
     k_sleep(K_SECONDS(3));
 
+	gc9a01_init(display);
 
 	while (1) {
 
 		k_sleep(K_SECONDS(5));
+
+		//display_test(display);
+
+		printk("display test complete!\n");
         printk("---\n");
 
     }
@@ -71,4 +76,19 @@ void main(void){
         label = "RV-3028-C7";
     };
 };
+
+
+	// I2C
+	i2c2_default: i2c2_default {
+		group1 {
+				psels = <NRF_PSEL(TWIM_SCL, 0, 25)>,
+						<NRF_PSEL(TWIM_SDA, 0, 26)>;
+		};
+	};
+	i2c2_sleep: i2c2_sleep {
+			group1 {
+					psels = <NRF_PSEL(TWIM_SCL, 1, 4)>,
+							<NRF_PSEL(TWIM_SDA, 1, 5)>;
+			};
+	};
 */
