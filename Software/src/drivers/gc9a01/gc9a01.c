@@ -1,6 +1,11 @@
 #define DT_DRV_COMPAT buydisplay_gc9a01
 
 #include <string.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include <zephyr/device.h>
 #include <zephyr/init.h>
 #include <zephyr/drivers/display.h>
@@ -15,80 +20,21 @@
 #include <zephyr/pm/policy.h>
 #include <zephyr/sys/printk.h>
 #include "gc9a01.h"
+#include "fonts/fonts.h"
+#include "img.h"
 
 #define GC9A01_SPI_PROFILING
-
-/**
- * gc9a01 display controller driver.
- *
- */
-
-#define GC9A01A_SLPIN 0x10  ///< Enter Sleep Mode
-#define GC9A01A_SLPOUT 0x11 ///< Sleep Out
-#define GC9A01A_PTLON 0x12  ///< Partial Mode ON
-#define GC9A01A_NORON 0x13  ///< Normal Display Mode ON
-
-#define GC9A01A_INVOFF 0x20   ///< Display Inversion OFF
-#define GC9A01A_INVON 0x21    ///< Display Inversion ON
-#define GC9A01A_DISPOFF 0x28  ///< Display OFF
-#define GC9A01A_DISPON 0x29   ///< Display ON
-
-#define GC9A01A_CASET 0x2A ///< Column Address Set
-#define GC9A01A_PASET 0x2B ///< Page Address Set
-#define GC9A01A_RAMWR 0x2C ///< Memory Write
-
-#define GC9A01A_PTLAR 0x30    ///< Partial Area
-#define GC9A01A_VSCRDEF 0x33  ///< Vertical Scrolling Definition
-#define GC9A01A_TEOFF 0x34    ///< Tearing effect line off
-#define GC9A01A_TEON 0x35     ///< Tearing effect line on
-#define GC9A01A_MADCTL 0x36   ///< Memory Access Control
-#define GC9A01A_VSCRSADD 0x37 ///< Vertical Scrolling Start Address
-#define GC9A01A_PIXFMT 0x3A   ///< COLMOD: Pixel Format Set
-
-#define GC9A01A1_DFUNCTR 0xB6 ///< Display Function Control
-
-#define GC9A01A1_VREG1A 0xC3 ///< Vreg1a voltage control
-#define GC9A01A1_VREG1B 0xC4 ///< Vreg1b voltage control
-#define GC9A01A1_VREG2A 0xC9 ///< Vreg2a voltage control
-
-#define GC9A01A_RDID1 0xDA ///< Read ID 1
-#define GC9A01A_RDID2 0xDB ///< Read ID 2
-#define GC9A01A_RDID3 0xDC ///< Read ID 3
-
-#define GC9A01A1_GMCTRP1 0xE0 ///< Positive Gamma Correction
-#define GC9A01A1_GMCTRN1 0xE1 ///< Negative Gamma Correction
-#define GC9A01A_FRAMERATE 0xE8 ///< Frame rate control
-
-#define GC9A01A_INREGEN2 0xEF ///< Inter register enable 2
-#define GC9A01A_GAMMA1 0xF0 ///< Set gamma 1
-#define GC9A01A_GAMMA2 0xF1 ///< Set gamma 2
-#define GC9A01A_GAMMA3 0xF2 ///< Set gamma 3
-#define GC9A01A_GAMMA4 0xF3 ///< Set gamma 4
-
-#define GC9A01A_INREGEN1 0xFE ///< Inter register enable 1
-
-#define MADCTL_MY 0x80  ///< Bottom to top
-#define MADCTL_MX 0x40  ///< Right to left
-#define MADCTL_MV 0x20  ///< Reverse Mode
-#define MADCTL_ML 0x10  ///< LCD refresh Bottom to top
-#define MADCTL_RGB 0x00 ///< Red-Green-Blue pixel order
-#define MADCTL_BGR 0x08 ///< Blue-Green-Red pixel order
-#define MADCTL_MH 0x04  ///< LCD refresh right to left
 
 #define DISPLAY_WIDTH         DT_INST_PROP(0, width)
 #define DISPLAY_HEIGHT        DT_INST_PROP(0, height)
 
-// Command codes:
-#define COL_ADDR_SET        0x2A
-#define ROW_ADDR_SET        0x2B
-#define MEM_WR              0x2C
-#define MEM_WR_CONT         0x3C
-#define COLOR_MODE          0x3A
-#define COLOR_MODE_12_BIT  0x03
-#define COLOR_MODE_16_BIT  0x05
-#define COLOR_MODE_18_BIT  0x06
-#define SLPIN               0x10
-#define SLPOUT              0x11
+
+/* Data Structs */
+
+struct gc9a01_frame frame = {{0, 0}, {DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1}};
+struct GC9A01_draw_prop fonts; 
+
+/**/
 
 const uint8_t initcmd[] = {
     GC9A01A_INREGEN2, 0,
@@ -156,7 +102,6 @@ const uint8_t initcmd[] = {
     0x00                  // End of list
 };
 
-struct gc9a01_frame frame = {{0, 0}, {DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1}};
 
 int gc9a01_write_cmd(const struct device *dev, uint8_t cmd,
                                    const uint8_t *data, size_t len)
@@ -328,13 +273,18 @@ int gc9a01_controller_init(const struct device *dev)
 
     __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_SUSPEND) == 0, "Failed suspend SPI Bus");
 
-    frame.start.X = 0;
-    frame.end.X = 240;
-    frame.start.Y = 0;
-    frame.end.Y = 240;
-    gc9a01_set_frame(dev, frame);
 
     printk("Initialization complete!\n");
+
+    
+    // Hollow Circle
+    int center_x = DISPLAY_WIDTH / 2;
+    int center_y = DISPLAY_HEIGHT / 2;
+    int radius = DISPLAY_WIDTH / 4;  
+    GC9A01_draw_circle(dev, center_x, center_y, radius, RED);
+
+    // Text
+    GC9A01_printf(dev, 25, 25, "TEST");
 
     return 0;
 }
@@ -362,7 +312,8 @@ int gc9a01_init(const struct device *dev)
 
     // Default to 0 brightness
     gpio_pin_configure_dt(&config->bl_gpio, GPIO_OUTPUT_INACTIVE);
-    return gc9a01_controller_init(dev);
+    gc9a01_controller_init(dev);
+    return 0;
 }
 
 int gc9a01_pm_action(const struct device *dev,
@@ -425,50 +376,229 @@ struct display_driver_api gc9a01_driver_api = {
     .set_orientation = gc9a01_set_orientation,
 };
 
+void GC9A01_draw_pixel(const struct device *dev, int x, int y, uint16_t color) {
 
-void display_test(const struct device *dev){
+    // Handle invalid pixel location
+    if ((x < 0) || (y < 0) || (x >= DISPLAY_WIDTH) || (y >= DISPLAY_HEIGHT))
+        return;
+    
+    // Set frame to one pixel
+    frame.start.X = x;
+    frame.start.Y = y;
+    frame.end.X = x;
+    frame.end.Y = y;
+    gc9a01_set_frame(dev, frame);
 
-    printk("Begin display test\n");
-
-    // Checkerboard
-    uint8_t color[3];
-
+    /* Test if this can be removed
     struct display_buffer_descriptor desc = {
-                .buf_size = sizeof(color),
-                .height = 240,
-                .width = 240,
-                .pitch = 2,
+        .buf_size = sizeof(color),
+        .height = DISPLAY_HEIGHT,
+        .width = DISPLAY_WIDTH,
+        .pitch = 2,  
     };
+    */
 
-    for (int x = 0; x < 240; x++) {
-        for (int y = 0; y < 240; y++) {
-            if ((x / 10) % 2 ==  (y / 10) % 2) {
-                color[0] = 0xFF;
-                color[1] = 0xFF;
-                color[2] = 0xFF;
-            } else {
-                color[0] = 0x00;
-                color[1] = 0x00;
-                color[2] = 0x00;
-            }
+    // Write pixel data
+    gc9a01_write(dev, x, y, NULL, color);
 
-            struct spi_buf buf = {.buf = color, .len = sizeof(color)};
+    // Set frame back to full screen
+    frame.start.X = 0;
+    frame.start.Y = 0;
+    frame.end.X = 239;
+    frame.end.Y = 239;
+    gc9a01_set_frame(dev, frame);
+}
 
-            if (x == 0 && y == 0) {
+
+/* Display geometry */
+
+void GC9A01_fill_rect(const struct device *dev, int16_t x, int16_t y, int16_t w, int16_t h,
+		uint16_t color) {
+
+	if ((x + w) > DISPLAY_WIDTH)
+		w = DISPLAY_WIDTH - x;
+	if ((y + h) > DISPLAY_HEIGHT)
+		h = DISPLAY_HEIGHT - y;
+
+    uint8_t color_new[3];
+    color_new[2] = (uint8_t)((color & 0x1F) << 3);   // blue
+    color_new[1] = (uint8_t)((color & 0x7E0) >> 3);  // green
+    color_new[0] = (uint8_t)((color & 0xF800) >> 8); // red
+
+    frame.start.X = x;
+    frame.start.Y = y;
+    frame.end.X = w;
+    frame.end.Y = h;
+    gc9a01_set_frame(dev, frame);
+
+    for (uint16_t row = 0; row < h+1; row++) {
+		for (uint16_t col = 0; col < w+1; col++) {		
+            if (row == 0 && col == 0) {
                 gc9a01_write_cmd(dev, MEM_WR, NULL, 0);
-                gc9a01_write(dev, 0, 0, &desc, &buf);
-            } else {
+                gc9a01_write(dev, x, y, NULL, color_new);
+            } else {  
                 gc9a01_write_cmd(dev, MEM_WR_CONT, NULL, 0);
-                gc9a01_write(dev, 0, 0, &desc, &buf);
+                gc9a01_write(dev, x, y, NULL, color_new);
             }
         }
     }
-
-    printk("Display test\n");
-
+ 
+    frame.start.X = 0;
+    frame.start.Y = 0;
+    frame.end.X = 239;
+    frame.end.Y = 239;
+    GC9A01_set_frame(frame);
 }
+
+
+void GC9A01_draw_circle(const struct device *dev, uint16_t x0, uint16_t y0, int r, uint16_t color) {
+    int f = 1 - r;
+    int ddF_x = 1;
+    int ddF_y = -2 * r;
+    int x = 0;
+    int y = r;
+    GC9A01_draw_pixel(dev, x0, y0 + r, color);
+    GC9A01_draw_pixel(dev, x0, y0 - r, color);
+    GC9A01_draw_pixel(dev, x0 + r, y0, color);
+    GC9A01_draw_pixel(dev, x0 - r, y0, color);
+    while (x < y)
+    {
+        if (f >= 0)
+        {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+        GC9A01_draw_pixel(dev, x0 + x, y0 + y, color);
+        GC9A01_draw_pixel(dev, x0 - x, y0 + y, color);
+        GC9A01_draw_pixel(dev, x0 + x, y0 - y, color);
+        GC9A01_draw_pixel(dev, x0 - x, y0 - y, color);
+        GC9A01_draw_pixel(dev, x0 + y, y0 + x, color);
+        GC9A01_draw_pixel(dev, x0 - y, y0 + x, color);
+        GC9A01_draw_pixel(dev, x0 + y, y0 - x, color);
+        GC9A01_draw_pixel(dev, x0 - y, y0 - x, color);
+    }
+}
+
+void GC9A01_fill_circle(const struct device *dev, int16_t x, int16_t y, int16_t radius,
+		uint16_t color) {
+
+    for (uint8_t curX = (x - radius); curX <= (x + radius); curX++)
+    {
+        for (uint8_t curY = (y - radius); curY <= (y + radius); curY++)
+        {
+            if ((pow(x-curX, 2) + pow(y-curY, 2)) <= pow(radius, 2))
+            {
+                GC9A01_draw_pixel(dev, curX, curY, color);
+            }
+        }
+    }
+}
+
+/*------------------------------------------------------------*/
+
+
+/* Display Text */
+
+void GC9A01_fonts_init(void) {
+    Font8.Height = 8;
+    Font8.Width = 5;
+    Font12.Height = 12;
+    Font12.Width = 7;
+    Font16.Height = 16;
+    Font16.Width = 11;
+    Font20.Height = 20;
+    Font20.Width = 14;
+    Font24.Height = 24;
+    Font24.Width = 17;
+    fonts.BackColor = BLACK;
+    fonts.TextColor = GREEN;
+    fonts.pFont = &Font16;
+}
+
+void GC9A01_set_text_color(uint16_t color) {
+    fonts.TextColor = color;
+}
+
+void GC9A01_set_back_color(uint16_t color) {
+    fonts.BackColor = color;
+}
+
+void GC9A01_set_font(sFONT *pFonts) {
+    fonts.pFont = pFonts;
+}
+
+
+void GC9A01_draw_char(const struct device *dev, uint16_t x, uint16_t y, uint8_t c) {
+    uint32_t i = 0, j = 0;
+    uint16_t height, width;
+    uint8_t offset;
+    uint8_t *c_t;
+    uint8_t *pchar;
+    uint32_t line = 0;
+    height = fonts.pFont->Height;
+    width = fonts.pFont->Width;
+    offset = 8 * ((width + 7) / 8) - width;
+    c_t = (uint8_t *)&(fonts.pFont->table[(c - ' ') * fonts.pFont->Height * ((fonts.pFont->Width + 7) / 8)]);
+    for (i = 0; i < height; i++)
+    {
+        pchar = ((uint8_t *)c_t + (width + 7) / 8 * i);
+        switch (((width + 7) / 8))
+        {
+        case 1:
+            line = pchar[0];
+            break;
+        case 2:
+            line = (pchar[0] << 8) | pchar[1];
+            break;
+        case 3:
+        default:
+            line = (pchar[0] << 16) | (pchar[1] << 8) | pchar[2];
+            break;
+        }
+        for (j = 0; j < width; j++)
+        {
+            if (line & (1 << (width - j + offset - 1)))
+            {
+                GC9A01_draw_pixel(dev, (x + j), y, fonts.TextColor);
+            }
+            else
+            {
+                GC9A01_draw_pixel(dev, (x + j), y, fonts.BackColor);
+                // continue;
+            }
+        }
+        y++;
+    }
+}
+
+void GC9A01_draw_string(const struct device *dev, uint16_t x,uint16_t y, char *str) {
+    while (*str)
+    {
+        GC9A01_draw_char(dev, x, y, str[0]);
+        x += fonts.pFont->Width;
+        (void)*str++;
+    }
+}
+
+void GC9A01_printf(const struct device *dev, int16_t X, int16_t Y, const char *args, ...) {
+	char StrBuff[100];
+
+	va_list ap;
+	va_start(ap, args);
+	vsnprintf(StrBuff, sizeof(StrBuff), args, ap);
+	va_end(ap);
+	GC9A01_draw_string(dev, X, Y, StrBuff);
+}
+
+
+/*-----------------------------------------------------------------------------*/
 
 
 PM_DEVICE_DT_INST_DEFINE(0, gc9a01_pm_action);
 DEVICE_DT_INST_DEFINE(0, gc9a01_init, PM_DEVICE_DT_INST_GET(0), NULL, &gc9a01_config, POST_KERNEL,
                       CONFIG_DISPLAY_INIT_PRIORITY, &gc9a01_driver_api);
+

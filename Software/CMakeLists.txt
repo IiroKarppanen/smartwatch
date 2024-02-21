@@ -15,6 +15,11 @@ target_sources(app PRIVATE
 src/main.c
 src/drivers/gc9a01/gc9a01.c
 #src/drivers/rtc/rtc.c
+src/drivers/gc9a01/fonts/font8.c
+src/drivers/gc9a01/fonts/font12.c
+src/drivers/gc9a01/fonts/font16.c
+src/drivers/gc9a01/fonts/font20.c
+src/drivers/gc9a01/fonts/font24.c
 )
 
 
