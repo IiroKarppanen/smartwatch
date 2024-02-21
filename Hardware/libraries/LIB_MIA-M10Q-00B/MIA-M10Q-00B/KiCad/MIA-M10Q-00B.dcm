@@ -1,9 +1,0 @@
-EESchema-DOCLIB  Version 2.0
-#
-$CMP MIA-M10Q-00B
-D u-blox M10 GNSS System-in-Package ROM, TCXO, SAW, LNA, 1.8/3V 4.5 x 4.5 mm, S-LGA 53,
-K
-F https://content.u-blox.com/sites/default/files/documents/MIA-M10Q_DataSheet_UBX-22015849.pdf
-$ENDCMP
-#
-#End Doc Library
