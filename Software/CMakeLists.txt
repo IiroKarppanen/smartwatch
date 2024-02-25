@@ -24,3 +24,4 @@ src/drivers/gc9a01/fonts/font24.c
 
 
 
+#add_compile_definitions(LV_LVGL_H_INCLUDE_SIMPLE)

@@ -21,13 +21,14 @@
 #include <zephyr/sys/printk.h>
 #include "gc9a01.h"
 #include "fonts/fonts.h"
-#include "img.h"
+#include "battery_img.h"
 
 #define GC9A01_SPI_PROFILING
 
 #define DISPLAY_WIDTH         DT_INST_PROP(0, width)
 #define DISPLAY_HEIGHT        DT_INST_PROP(0, height)
 
+static uint8_t m_tx_buf[] = {0xff, 0xff};  
 
 /* Data Structs */
 
@@ -155,43 +156,53 @@ int gc9a01_blanking_on(const struct device *dev)
     return gc9a01_write_cmd(dev, GC9A01A_DISPOFF, NULL, 0);
 }
 
-int gc9a01_write(const struct device *dev, const uint16_t x, const uint16_t y,
-                        const struct display_buffer_descriptor *desc,
-                        const void *buf)
-{
+
+int gc9a01_write_data(const struct device *dev, const void *tx_data, size_t tx_len){
+
     const struct gc9a01_config *config = dev->config;
-    __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_RESUME) == 0, "Failed resume SPI Bus");
-#ifdef GC9A01_SPI_PROFILING
-    uint32_t start_time;
-    uint32_t stop_time;
-    uint32_t cycles_spent;
-    uint32_t nanoseconds_spent;
-#endif
-    uint16_t x_end_idx = x + desc->width - 1;
-    uint16_t y_end_idx = y + desc->height - 1;
 
-    frame.start.X = x;
-    frame.end.X = x_end_idx;
-    frame.start.Y = y;
-    frame.end.Y = y_end_idx;
-    gc9a01_set_frame(dev, frame);
+    int r;
+	struct spi_buf tx_buf;
+	struct spi_buf_set tx_bufs = { .buffers = &tx_buf, .count = 1U };
 
-    size_t len = (x_end_idx + 1 - x) * (y_end_idx + 1 - y) * 16 / 8;
-    //printk("x_start: %d, y_start: %d, x_end: %d, y_end: %d, buf_size: %d, pitch: %d len: %d\n", x, y, x_end_idx, y_end_idx, desc->buf_size, desc->pitch, len);
+    tx_buf.buf = (void *)tx_data;
+	tx_buf.len = tx_len;
 
-#ifdef GC9A01_SPI_PROFILING
-    start_time = k_cycle_get_32();
-#endif
-    gc9a01_write_cmd(dev, GC9A01A_RAMWR, buf, len);
-#ifdef GC9A01_SPI_PROFILING
-    stop_time = k_cycle_get_32();
-    cycles_spent = stop_time - start_time;
-    nanoseconds_spent = k_cyc_to_ns_ceil32(cycles_spent);
-    //printk("%d =>: %dns", len, nanoseconds_spent);
-#endif
-    __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_SUSPEND) == 0, "Failed suspend SPI Bus");
+    gpio_pin_set_dt(&config->dc_gpio, 1);
+
+
+    r = spi_write_dt(&config->bus, &tx_bufs);
+	if (r < 0) {
+        printk("SPI WRITE FAILED\n");
+		return r;
+	}
+
     return 0;
 }
+
+int gc9a01_write_command(const struct device *dev, uint8_t cmd){
+
+    const struct gc9a01_config *config = dev->config;
+
+    int r;
+	struct spi_buf tx_buf;
+	struct spi_buf_set tx_bufs = { .buffers = &tx_buf, .count = 1U };
+
+    /* send command */
+	tx_buf.buf = &cmd;
+	tx_buf.len = 1U;
+
+    gpio_pin_set_dt(&config->dc_gpio, 0);
+
+    r = spi_write_dt(&config->bus, &tx_bufs);
+	if (r < 0) {
+        printk("SPI WRITE FAILED\n");
+		return r;
+	}
+
+    return 0;
+}
+
 
 int gc9a01_read(const struct device *dev, const uint16_t x, const uint16_t y,
                        const struct display_buffer_descriptor *desc, void *buf)
@@ -274,18 +285,12 @@ int gc9a01_controller_init(const struct device *dev)
     __ASSERT(pm_device_action_run(config->bus.bus, PM_DEVICE_ACTION_SUSPEND) == 0, "Failed suspend SPI Bus");
 
 
+    struct gc9a01_frame frame = {{0, 0}, {239, 239}};
+    gc9a01_set_frame(dev, frame);
+    GC9A01_fonts_init();
+
     printk("Initialization complete!\n");
-
     
-    // Hollow Circle
-    int center_x = DISPLAY_WIDTH / 2;
-    int center_y = DISPLAY_HEIGHT / 2;
-    int radius = DISPLAY_WIDTH / 4;  
-    GC9A01_draw_circle(dev, center_x, center_y, radius, RED);
-
-    // Text
-    GC9A01_printf(dev, 25, 25, "TEST");
-
     return 0;
 }
 
@@ -366,7 +371,7 @@ const struct gc9a01_config gc9a01_config = {
 struct display_driver_api gc9a01_driver_api = {
     .blanking_on = gc9a01_blanking_on,
     .blanking_off = gc9a01_blanking_off,
-    .write = gc9a01_write,
+    .write = gc9a01_write_data,
     .read = gc9a01_read,
     .get_framebuffer = gc9a01_get_framebuffer,
     .set_brightness = gc9a01_set_brightness,
@@ -376,41 +381,9 @@ struct display_driver_api gc9a01_driver_api = {
     .set_orientation = gc9a01_set_orientation,
 };
 
-void GC9A01_draw_pixel(const struct device *dev, int x, int y, uint16_t color) {
-
-    // Handle invalid pixel location
-    if ((x < 0) || (y < 0) || (x >= DISPLAY_WIDTH) || (y >= DISPLAY_HEIGHT))
-        return;
-    
-    // Set frame to one pixel
-    frame.start.X = x;
-    frame.start.Y = y;
-    frame.end.X = x;
-    frame.end.Y = y;
-    gc9a01_set_frame(dev, frame);
-
-    /* Test if this can be removed
-    struct display_buffer_descriptor desc = {
-        .buf_size = sizeof(color),
-        .height = DISPLAY_HEIGHT,
-        .width = DISPLAY_WIDTH,
-        .pitch = 2,  
-    };
-    */
-
-    // Write pixel data
-    gc9a01_write(dev, x, y, NULL, color);
-
-    // Set frame back to full screen
-    frame.start.X = 0;
-    frame.start.Y = 0;
-    frame.end.X = 239;
-    frame.end.Y = 239;
-    gc9a01_set_frame(dev, frame);
-}
 
 
-/* Display geometry */
+/* Display Geometry*/
 
 void GC9A01_fill_rect(const struct device *dev, int16_t x, int16_t y, int16_t w, int16_t h,
 		uint16_t color) {
@@ -434,11 +407,11 @@ void GC9A01_fill_rect(const struct device *dev, int16_t x, int16_t y, int16_t w,
     for (uint16_t row = 0; row < h+1; row++) {
 		for (uint16_t col = 0; col < w+1; col++) {		
             if (row == 0 && col == 0) {
-                gc9a01_write_cmd(dev, MEM_WR, NULL, 0);
-                gc9a01_write(dev, x, y, NULL, color_new);
+                gc9a01_write_command(dev, MEM_WR);
+                gc9a01_write_data(dev, color_new, sizeof(color_new));
             } else {  
-                gc9a01_write_cmd(dev, MEM_WR_CONT, NULL, 0);
-                gc9a01_write(dev, x, y, NULL, color_new);
+                gc9a01_write_command(dev, MEM_WR_CONT);
+                gc9a01_write_data(dev, color_new, sizeof(color_new));
             }
         }
     }
@@ -447,58 +420,12 @@ void GC9A01_fill_rect(const struct device *dev, int16_t x, int16_t y, int16_t w,
     frame.start.Y = 0;
     frame.end.X = 239;
     frame.end.Y = 239;
-    GC9A01_set_frame(frame);
+    gc9a01_set_frame(dev, frame);
 }
 
 
-void GC9A01_draw_circle(const struct device *dev, uint16_t x0, uint16_t y0, int r, uint16_t color) {
-    int f = 1 - r;
-    int ddF_x = 1;
-    int ddF_y = -2 * r;
-    int x = 0;
-    int y = r;
-    GC9A01_draw_pixel(dev, x0, y0 + r, color);
-    GC9A01_draw_pixel(dev, x0, y0 - r, color);
-    GC9A01_draw_pixel(dev, x0 + r, y0, color);
-    GC9A01_draw_pixel(dev, x0 - r, y0, color);
-    while (x < y)
-    {
-        if (f >= 0)
-        {
-            y--;
-            ddF_y += 2;
-            f += ddF_y;
-        }
-        x++;
-        ddF_x += 2;
-        f += ddF_x;
-        GC9A01_draw_pixel(dev, x0 + x, y0 + y, color);
-        GC9A01_draw_pixel(dev, x0 - x, y0 + y, color);
-        GC9A01_draw_pixel(dev, x0 + x, y0 - y, color);
-        GC9A01_draw_pixel(dev, x0 - x, y0 - y, color);
-        GC9A01_draw_pixel(dev, x0 + y, y0 + x, color);
-        GC9A01_draw_pixel(dev, x0 - y, y0 + x, color);
-        GC9A01_draw_pixel(dev, x0 + y, y0 - x, color);
-        GC9A01_draw_pixel(dev, x0 - y, y0 - x, color);
-    }
-}
 
-void GC9A01_fill_circle(const struct device *dev, int16_t x, int16_t y, int16_t radius,
-		uint16_t color) {
-
-    for (uint8_t curX = (x - radius); curX <= (x + radius); curX++)
-    {
-        for (uint8_t curY = (y - radius); curY <= (y + radius); curY++)
-        {
-            if ((pow(x-curX, 2) + pow(y-curY, 2)) <= pow(radius, 2))
-            {
-                GC9A01_draw_pixel(dev, curX, curY, color);
-            }
-        }
-    }
-}
-
-/*------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------*/
 
 
 /* Display Text */
@@ -515,8 +442,8 @@ void GC9A01_fonts_init(void) {
     Font24.Height = 24;
     Font24.Width = 17;
     fonts.BackColor = BLACK;
-    fonts.TextColor = GREEN;
-    fonts.pFont = &Font16;
+    fonts.TextColor = WHITE;
+    fonts.pFont = &Font24;
 }
 
 void GC9A01_set_text_color(uint16_t color) {
@@ -530,6 +457,83 @@ void GC9A01_set_back_color(uint16_t color) {
 void GC9A01_set_font(sFONT *pFonts) {
     fonts.pFont = pFonts;
 }
+
+void GC9A01_draw_pixel(const struct device *dev, int x, int y, uint16_t color) {
+    if ((x < 0) || (y < 0) || (x >= DISPLAY_WIDTH) || (y >= DISPLAY_HEIGHT))
+        return;
+    frame.start.X = x;
+    frame.end.X = x;
+    frame.start.Y = y;
+    frame.end.Y = y;
+    gc9a01_set_frame(dev, frame);
+    
+    m_tx_buf[0] = (uint8_t)(color >> 8);   // MSB of color (high byte)
+    m_tx_buf[1] = (uint8_t)(color & 0xFF);  // LSB of color (low byte)
+
+    gc9a01_write_command(dev, MEM_WR);
+    gc9a01_write_data(dev, m_tx_buf, sizeof(m_tx_buf));
+
+    frame.start.X = 0;
+    frame.end.X = 239;
+    frame.start.Y = 0;
+    frame.end.Y = 239;
+    gc9a01_set_frame(dev, frame);
+}
+
+void GC9A01_draw_line(const struct device *dev, uint16_t color, uint16_t x1, uint16_t y1,
+                      uint16_t x2, uint16_t y2) {
+    int steep = abs(y2 - y1) > abs(x2 - x1);
+    if (steep)
+    {
+        swap(x1, y1);
+        swap(x2, y2);
+    }
+    if (x1 > x2)
+    {
+        swap(x1, x2);
+        swap(y1, y2);
+    }
+    int dx, dy;
+    dx = x2 - x1;
+    dy = abs(y2 - y1);
+    int err = dx / 2;
+    int ystep;
+    if (y1 < y2)
+        ystep = 1;
+    else
+        ystep = -1;
+    for (; x1 <= x2; x1++)
+    {
+        if (steep)
+            GC9A01_draw_pixel(dev, y1, x1, color);
+        else
+            GC9A01_draw_pixel(dev, x1, y1, color);
+        err -= dy;
+        if (err < 0)
+        {
+            y1 += ystep;
+            err += dx;
+        }
+    }
+}
+
+void GC9A01_fill_circle(const struct device *dev, int16_t x, int16_t y, int16_t radius,
+		uint16_t color) {
+
+    for (uint8_t curX = (x - radius); curX <= (x + radius); curX++)
+    {
+        for (uint8_t curY = (y - radius); curY <= (y + radius); curY++)
+        {
+            if ((pow(x-curX, 2) + pow(y-curY, 2)) <= pow(radius, 2))
+            {
+                GC9A01_draw_pixel(dev, curX, curY, color);
+            }
+        }
+    }
+
+}
+
+
 
 
 void GC9A01_draw_char(const struct device *dev, uint16_t x, uint16_t y, uint8_t c) {
@@ -584,21 +588,108 @@ void GC9A01_draw_string(const struct device *dev, uint16_t x,uint16_t y, char *s
     }
 }
 
-void GC9A01_printf(const struct device *dev, int16_t X, int16_t Y, const char *args, ...) {
-	char StrBuff[100];
 
-	va_list ap;
-	va_start(ap, args);
-	vsnprintf(StrBuff, sizeof(StrBuff), args, ap);
-	va_end(ap);
-	GC9A01_draw_string(dev, X, Y, StrBuff);
+/*-------------------------------------------------------------------------------*/
+
+
+
+/* IMAGE */
+
+
+void GC9A01_draw_image(const struct device *dev) {
+    uint8_t color[2];
+
+    frame.start.X = 10;
+    frame.end.X = 10 + width - 1;
+    frame.start.Y = 10;
+    frame.end.Y = 10 + height - 1;
+
+    gc9a01_set_frame(dev, frame);
+
+    for (size_t x = 0; x < (height * width); x = x + width) {
+        for (size_t y = 0; y < height; y++) {
+            // Assuming img is an array of 16-bit RGB565 values
+            uint16_t pixel = battery_img[x + y];
+
+            color[0] = (uint8_t)(pixel >> 8);   // MSB of color (high byte)
+            color[1] = (uint8_t)(pixel & 0xFF);  // LSB of color (low byte)
+            if (x == 0 && y == 0) {
+                gc9a01_write_command(dev, MEM_WR);
+                gc9a01_write_data(dev, color, sizeof(color));
+            }
+            else {
+                gc9a01_write_command(dev, MEM_WR_CONT);
+                gc9a01_write_data(dev, color, sizeof(color));
+            }
+        }
+    }
 }
 
-
-/*-----------------------------------------------------------------------------*/
-
+/*-----------------------------------------------------------------------------------*/
 
 PM_DEVICE_DT_INST_DEFINE(0, gc9a01_pm_action);
 DEVICE_DT_INST_DEFINE(0, gc9a01_init, PM_DEVICE_DT_INST_GET(0), NULL, &gc9a01_config, POST_KERNEL,
                       CONFIG_DISPLAY_INIT_PRIORITY, &gc9a01_driver_api);
 
+
+
+
+/*
+
+void GC9A01_draw_image(const struct device *dev) {
+    uint8_t color[3];
+
+    frame.start.X = 10;
+    frame.end.X = 10 + width - 1;
+    frame.start.Y = 10;
+    frame.end.Y = 10 + height - 1;
+
+    gc9a01_set_frame(dev, frame);
+
+    for (size_t i = 0; i < width * height; ++i) {
+        uint16_t pixel = battery_img[i];
+
+        color[0] = (uint8_t)(pixel >> 8);   // MSB of color (high byte)
+        color[1] = (uint8_t)(pixel & 0xFF);  // LSB of color (low byte)
+
+        if (i == 0) {
+            gc9a01_write_command(dev, MEM_WR);
+            gc9a01_write_data(dev, color, sizeof(color));
+        } else {
+            gc9a01_write_command(dev, MEM_WR_CONT);
+            gc9a01_write_data(dev, color, sizeof(color));
+        }
+    }
+}
+
+
+
+void GC9A01_draw_image(const struct device *dev){
+      
+    uint8_t color[3];
+
+    frame.start.X = 10;
+    frame.end.X = 230;
+    frame.start.Y = 10;
+    frame.end.Y = 230;
+
+    gc9a01_set_frame(dev, frame);
+    for (size_t x = 0; x < 48399; x = x + 219) {
+        for (size_t y = 0; y < 220; y++) {
+            // Assuming img is an array of 16-bit RGB565 values
+            uint16_t pixel = battery_img[x + y];
+
+            color[0] = (uint8_t)(pixel >> 8);   // MSB of color (high byte)
+            color[1] = (uint8_t)(pixel & 0xFF);  // LSB of color (low byte)
+            if (x == 0 && y == 0) {
+                gc9a01_write_command(dev, MEM_WR);
+                gc9a01_write_data(dev, color, sizeof(color));
+            }
+            else {
+                gc9a01_write_command(dev, MEM_WR_CONT);
+                gc9a01_write_data(dev, color, sizeof(color));
+            }
+        }
+    }
+
+}*/

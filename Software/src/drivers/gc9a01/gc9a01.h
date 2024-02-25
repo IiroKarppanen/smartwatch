@@ -58,7 +58,8 @@ struct gc9a01_frame {
 int gc9a01_blanking_on(const struct device *dev);
 int gc9a01_blanking_off(const struct device *dev);
 int gc9a01_write(const struct device *dev, const uint16_t x, const uint16_t y,
-                 const struct display_buffer_descriptor *desc, const void *buf);
+                        const struct display_buffer_descriptor *desc,
+                        const void *buf);
 int gc9a01_read(const struct device *dev, const uint16_t x, const uint16_t y,
                 const struct display_buffer_descriptor *desc, void *buf);
 void *gc9a01_get_framebuffer(const struct device *dev);
@@ -71,11 +72,13 @@ int gc9a01_controller_init(const struct device *dev);
 int gc9a01_init(const struct device *dev);
 int gc9a01_pm_action(const struct device *dev, enum pm_device_action action);
 
-
+void GC9A01_fill_rect(const struct device *dev, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+void GC9A01_draw_string(const struct device *dev, uint16_t x,uint16_t y, char *str);
+void GC9A01_draw_char(const struct device *dev, uint16_t x, uint16_t y, uint8_t c);
 void GC9A01_draw_pixel(const struct device *dev, int x, int y, uint16_t color);
 void GC9A01_fill_circle(const struct device *dev, int16_t x, int16_t y, int16_t radius, uint16_t color);
-void draw_yellow_rectangle(const struct device *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height);  
-
+void GC9A01_draw_line(const struct device *dev, uint16_t color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+void GC9A01_draw_image(const struct device *dev);
 
 #define GC9A01A_SLPIN 0x10  ///< Enter Sleep Mode
 #define GC9A01A_SLPOUT 0x11 ///< Sleep Out

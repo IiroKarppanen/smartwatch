@@ -12,7 +12,8 @@
         "pm.h": "c",
         "printk.h": "c",
         "rv3028.h": "c",
-        "i2c.h": "c"
+        "i2c.h": "c",
+        "spi.h": "c"
     },
     "files.watcherExclude": {
         "**/target": true
