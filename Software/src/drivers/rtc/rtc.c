@@ -42,18 +42,22 @@ rv3028_init_t RTC_Init = {
     .Password = PASSWORD,
 };
 
-#define I2C_DEV_NAME DT_LABEL(DT_NODELABEL(i2c2))
+//#define I2C_DEV_NAME DT_LABEL(DT_NODELABEL(i2c2))
 
 static const struct device *i2c_dev;
 
 
 void TWI_Init(void)
 {
-    i2c_dev = device_get_binding(I2C_DEV_NAME);
+
+    //i2c_dev = device_get_binding(I2C_DEV_NAME);
+    const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
+
     if (!i2c_dev) {
         printk("I2C device not found");
         return;
     }
+
 }
 
 rv3028_error_t RV3028_Write(uint8_t Device_Addr, uint8_t Reg_Addr, const uint8_t *p_Reg_Data, uint32_t Length)
@@ -117,12 +121,20 @@ rv3028_error_t RV3028_Interface(rv3028_t* p_Device)
 void start_rtc(void){
 
 
-    printk("RV3028 RTC");
+    printk("RV3028 RTC\n");
+    k_sleep(K_MSEC(500));
     TWI_Init();
+
+    printk("I2c init compplete\n");
+    k_sleep(K_MSEC(500));
 
 
     rv3028_t RTC;
     ErrorCode = RV3028_Interface(&RTC);
+
+    printk("Rtc error code fetch complete\n");
+    k_sleep(K_MSEC(500));
+
     if (ErrorCode == RV3028_NO_ERROR)
     {
         printk("RTC initialized...");
