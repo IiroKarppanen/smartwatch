@@ -1,0 +1,107 @@
+#include "smartwatch_nrf5340_cpuapp_common_pincontrol.dtsi"
+
+/ {
+	model = "Nordic NRF5340 DK NRF5340 Application";
+	compatible = "nordic,nrf5340-dk-nrf5340-cpuapp";
+
+	chosen {
+		zephyr,display = &gc9a01;
+	};
+};
+
+&spi4 {
+	status = "disabled";
+};
+
+&led2{
+	status = "disabled";
+};
+
+&uart0{
+	status = "disabled";
+};
+
+&i2c1{
+	status = "disabled";
+};
+
+&spi3  {
+	status = "okay";
+	compatible = "nordic,nrf-spim";
+	pinctrl-0 = <&spi3_default>;
+	pinctrl-1 = <&spi3_sleep>;
+	pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+
+	gc9a01: gc9a01@0 {
+		compatible = "buydisplay,gc9a01";
+		status = "okay";
+		spi-max-frequency = <25000000>; //25 Mhz
+		reg = <0>;
+		zephyr,display-P-width = <240>;
+		zephyr,display-P-height = <240>;
+		width = <240>;
+		label = "buydisplay_gc9a01";
+		height = <240>;
+		bl-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+		dc-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+ 
+&i2c0 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
+	clock-frequency = <100000>;
+	label = "i2c0";
+	//zephyr,concat-buf-size = <128>;
+	zephyr,flash-buf-max-size = < 1024 >;
+
+	/*
+	RV-3028-C7@52 { // OR 36
+        compatible = "microcrystal,RV-3028-C7";
+        reg = <0x52>;
+        label = "microcrystal,RV-3028-C7";
+		clk-gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
+    };
+	 */
+	lis2mdl@30 {
+        compatible = "st,lis2mdl";
+        reg = <0x30>;
+        label = "st,lis2mdl";
+    };
+	bmi270@68 {
+		compatible = "bosch,bmi270";
+		reg = < 0x68 >;
+		label = "bosch_bmi270";
+	};
+	/* 
+	max17048@37 {
+		compatible = "maxim,max17048";
+		reg = <0x37>;
+	};
+	*/
+};
+
+
+
+&i2c2 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c2_default>;
+	pinctrl-1 = <&i2c2_sleep>;
+	pinctrl-names = "default", "sleep";
+	clock-frequency = <100000>;
+	label = "i2c3";
+
+	max30101@57 {
+		compatible = "maxim,max30101";
+		reg = <0x57>;
+		label = "maxim_max30101";
+	};
+};
+
