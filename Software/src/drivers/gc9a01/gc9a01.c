@@ -1,5 +1,7 @@
 #define DT_DRV_COMPAT buydisplay_gc9a01
 
+#include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <zephyr/device.h>
 #include <zephyr/init.h>
@@ -8,11 +10,15 @@
 #include <zephyr/drivers/spi.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/kernel.h>
+#include <zephyr/kernel/thread_stack.h>
 #include <math.h>
 #include <zephyr/logging/log.h>
 #include <inttypes.h>
+#include <ui.h>
 
 LOG_MODULE_REGISTER(gc9a01, CONFIG_DISPLAY_LOG_LEVEL_ERR);
+
+
 
 
 #define GC9A01_SPI_PROFILING
@@ -88,6 +94,7 @@ LOG_MODULE_REGISTER(gc9a01, CONFIG_DISPLAY_LOG_LEVEL_ERR);
 #define COLOR_MODE_18_BIT  0x06
 #define SLPIN               0x10
 #define SLPOUT              0x11
+
 
 #define RGB565(r, g, b)         (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
 
@@ -334,6 +341,8 @@ static int gc9a01_controller_init(const struct device *dev)
         i++;
     }
 
+
+
     return 0;
 }
 
@@ -366,7 +375,7 @@ static int gc9a01_init(const struct device *dev)
         return -ENODEV;
     }
 
-    gpio_pin_configure_dt(&config->bl_gpio, GPIO_OUTPUT_ACTIVE);
+
     return gc9a01_controller_init(dev);
 }
 
@@ -393,3 +402,10 @@ static struct display_driver_api gc9a01_driver_api = {
 
 DEVICE_DT_INST_DEFINE(0, gc9a01_init, NULL, NULL, &gc9a01_config, POST_KERNEL,
                       CONFIG_DISPLAY_INIT_PRIORITY, &gc9a01_driver_api);
+
+
+
+
+
+
+

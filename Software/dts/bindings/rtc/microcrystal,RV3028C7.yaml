@@ -1,0 +1,25 @@
+description: 	Real Time Clock (RTC) IC Clock/Calendar
+
+compatible: "microcrystal,RV3028C7"
+
+include: [i2c-device.yaml]
+
+
+properties:
+
+    evi-gpios:
+      type: phandle-array
+      required: false
+      description: Event Input
+
+    int-gpios:
+      type: phandle-array
+      required: false
+      description: Interrupt Output
+
+    clk-gpios:
+      type: phandle-array
+      required: true
+      description: Clock Output
+    
+on-bus: i2c

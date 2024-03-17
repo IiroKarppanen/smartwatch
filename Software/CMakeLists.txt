@@ -10,23 +10,23 @@ project(Software)
 
 include_directories(src/)
 include_directories(src/ui)
+include_directories(src/drivers/input)
+include_directories(src/drivers/input/cst816s)
 
 #add_subdirectory(src/drivers)
 
 
+
 target_sources(app PRIVATE 
 src/main.c
+src/drivers/bmi270/bmi270.c
+src/drivers/max30101/algorithm.c
+src/drivers/max30101/max30101.c
 src/drivers/gc9a01/gc9a01.c
-#src/drivers/rtc/RV3028/RV3028.c
-#src/drivers/rtc/rtc.c
-src/drivers/gc9a01/fonts/font8.c
-src/drivers/gc9a01/fonts/font12.c
-src/drivers/gc9a01/fonts/font16.c
-src/drivers/gc9a01/fonts/font20.c
-src/drivers/gc9a01/fonts/font24.c
-
+src/drivers/input/cst816d/input_cst816d.c
+src/drivers/rtc/RV3028/RV3028.c
+src/drivers/rtc/rtc.c
 #src/drivers/lis2mdl/lis2mdl.c
-
 )
 
 

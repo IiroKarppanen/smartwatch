@@ -1,0 +1,19 @@
+description: cst816d touch controller
+
+compatible: "hynitron,cst816d"
+
+include: [i2c-device.yaml]
+
+
+properties:
+    irq-gpios:
+      type: phandle-array
+      required: true
+      description: Interrupt pin.
+
+    rst-gpios:
+      type: phandle-array
+      required: true
+      description: Reset pin
+
+on-bus: i2c

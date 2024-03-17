@@ -1,27 +1,104 @@
 #include "smartwatch_nrf5340_cpuapp_common_pincontrol.dtsi"
 
+
 / {
 	model = "Nordic NRF5340 DK NRF5340 Application";
 	compatible = "nordic,nrf5340-dk-nrf5340-cpuapp";
 
+	clock-frequency  = <128000000>;
+
 	chosen {
 		zephyr,display = &gc9a01;
 	};
+
+	
+	lvgl_pointer_input: lvgl_pointer {
+		compatible = "zephyr,lvgl-pointer-input";
+		input = <&cst816d>;
+		//swap-xy;
+		//invert-x;
+	};
+	
+
+	//gnss: gnss-nmea-generic {
+	//	compatible = "gnss-nmea-generic";
+	//};
+
+	leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
+
+&pinctrl {
+	
+	uart0_default: uart0_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 20)>,
+				<NRF_PSEL(UART_RTS, 0, 19)>;
+		};
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 1, 0)>,
+				<NRF_PSEL(UART_CTS, 0, 21)>;
+			bias-pull-up;
+		};
+	};
+	
+	i2c2_default: i2c2_default {
+		group1 {
+				psels = <NRF_PSEL(TWIM_SCL, 1, 3)>,
+						<NRF_PSEL(TWIM_SDA, 1, 2)>;
+		};
+	};
+	i2c2_sleep: i2c2_sleep {
+			group1 {
+					psels = <NRF_PSEL(TWIM_SCL, 1, 8)>,
+							<NRF_PSEL(TWIM_SDA, 1, 9)>;
+			};
+	};
+	
+};
+
+&uart0{
+	status = "disabled";
+	current-speed = <115200>;
+	label = "UART_0";
+	
+	/* 
+	gnss: gnss-nmea-generic {
+		compatible = "gnss-nmea-generic";
+		label = "L96";
+	};
+	*/
+	
+
+};
+
+
+
+
+&pwm0 {
+	status = "disabled";
+};
+
+&sw_pwm {
+	status = "okay";
+	channel-gpios = <&gpio0 7 PWM_POLARITY_INVERTED>;
+};
+
+&pwm_led0 {
+	pwms = <&sw_pwm 0 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
+};
+
+
 
 &spi4 {
 	status = "disabled";
 };
 
 &led2{
-	status = "disabled";
-};
-
-&uart0{
-	status = "disabled";
-};
-
-&i2c1{
 	status = "disabled";
 };
 
@@ -33,42 +110,44 @@
 	pinctrl-names = "default", "sleep";
 	cs-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
 
+	
 	gc9a01: gc9a01@0 {
 		compatible = "buydisplay,gc9a01";
 		status = "okay";
-		spi-max-frequency = <25000000>; //25 Mhz
+		spi-max-frequency = <40000000>; // 40MHz
 		reg = <0>;
 		zephyr,display-P-width = <240>;
 		zephyr,display-P-height = <240>;
 		width = <240>;
 		label = "buydisplay_gc9a01";
 		height = <240>;
-		bl-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+		bl-gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
 		dc-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
 	};
+	
 };
 
  
-&i2c0 {
+&i2c1 {
 	compatible = "nordic,nrf-twim";
 	status = "okay";
-	pinctrl-0 = <&i2c0_default>;
-	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-1 = <&i2c1_sleep>;
 	pinctrl-names = "default", "sleep";
 	clock-frequency = <100000>;
-	label = "i2c0";
+	label = "I2C_1";
 	//zephyr,concat-buf-size = <128>;
 	zephyr,flash-buf-max-size = < 1024 >;
 
-	/*
-	RV-3028-C7@52 { // OR 36
-        compatible = "microcrystal,RV-3028-C7";
+	
+	RV3028C7: RV3028C7@52 { // OR 36
+        compatible = "microcrystal,RV3028C7";
         reg = <0x52>;
-        label = "microcrystal,RV-3028-C7";
+        label = "microcrystal,RV3028C7";
 		clk-gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
     };
-	 */
+	 
 	lis2mdl@30 {
         compatible = "st,lis2mdl";
         reg = <0x30>;
@@ -96,12 +175,22 @@
 	pinctrl-1 = <&i2c2_sleep>;
 	pinctrl-names = "default", "sleep";
 	clock-frequency = <100000>;
-	label = "i2c3";
+	label = "I2C_2";
 
 	max30101@57 {
 		compatible = "maxim,max30101";
 		reg = <0x57>;
 		label = "maxim_max30101";
 	};
+
+	
+	cst816d: cst816d@15 {
+        compatible = "hynitron,cst816d";
+        reg = <0x15>;
+        irq-gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+        rst-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+    };
+	
 };
+
 

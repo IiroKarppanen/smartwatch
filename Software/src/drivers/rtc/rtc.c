@@ -1,6 +1,11 @@
+#include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/init.h>
 #include "RV3028/RV3028.h"
+#include "rtc.h"
 
 
 #define PASSWORD    0x20
@@ -44,17 +49,18 @@ rv3028_init_t RTC_Init = {
 
 //#define I2C_DEV_NAME DT_LABEL(DT_NODELABEL(i2c2))
 
-static const struct device *i2c_dev;
+const struct device *i2c_dev;
 
 
 void TWI_Init(void)
 {
 
-    //i2c_dev = device_get_binding(I2C_DEV_NAME);
-    const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
+    //i2c_dev = device_get_binding(I2C_DEV_NAME);      microcrystal,RV-3028-C7
+    i2c_dev = device_get_binding("I2C_1");
+    
 
     if (!i2c_dev) {
-        printk("I2C device not found");
+        printk("I2C device not found\n");
         return;
     }
 
@@ -192,7 +198,7 @@ void start_rtc(void){
                 }
 
                 RV3028_GetTime(&RTC, &CurrentTime);
-                printk("  Current time: %u:%u:%u", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
+                printk("  Current time: %u:%u:%u\n", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
 
                 k_sleep(K_MSEC(1000));
             }
@@ -207,3 +213,6 @@ void start_rtc(void){
         printk("Can not initialize RTC interface. Error: %u", ErrorCode);
     }
 }
+
+
+//SYS_INIT(start_rtc, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);
