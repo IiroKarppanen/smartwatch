@@ -1,29 +1,69 @@
-#define DT_DRV_COMPAT bosch_bmi270
-
+#include <zephyr/kernel.h>
+#include <zephyr/kernel/thread_stack.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 #include <zephyr/sys/printk.h>
+#include <SEGGER_RTT.h>
 #include <zephyr/drivers/sensor.h>
-#include <zephyr/init.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/input/input.h>
+#include <zephyr/drivers/pwm.h>
+#include "sensor_data.h"
 
+
+
+#define ACCELOMETER_THREAD_STACK_SIZE 4096
+#define ACCELOMETER_THREAD_PRIORITY 5
+
+// LVGL thread
+K_THREAD_STACK_DEFINE(accelometer_thread_stack, ACCELOMETER_THREAD_STACK_SIZE);
+struct k_thread accelometer_thread_data;
 
 const struct device *bmi270;
 struct sensor_value acc[3], gyr[3];
 struct sensor_value full_scale, sampling_freq, oversampling;
 
 
-static int init_bmi270(){
+// accelometer task
+void accelometer_task()
+{
+    while (1) {
+        sensor_sample_fetch(bmi270);
+
+		sensor_channel_get(bmi270, SENSOR_CHAN_ACCEL_XYZ, acc);
+		sensor_channel_get(bmi270, SENSOR_CHAN_GYRO_XYZ, gyr);
+
+		/*
+		printk("AX: %d.%06d; AY: %d.%06d; AZ: %d.%06d; "
+		       "GX: %d.%06d; GY: %d.%06d; GZ: %d.%06d;\n",
+		       acc[0].val1, acc[0].val2,
+		       acc[1].val1, acc[1].val2,
+		       acc[2].val1, acc[2].val2,
+		       gyr[0].val1, gyr[0].val2,
+		       gyr[1].val1, gyr[1].val2,
+		       gyr[2].val1, gyr[2].val2);
+
+
+        k_msleep(75);  
+		*/
+    }
+}
+
+
+
+int init_bmi270(){
 
 	bmi270 = DEVICE_DT_GET_ONE(bosch_bmi270);
 	
-
 	if (!device_is_ready(bmi270)) {
 		printk("Device %s is not ready\n", bmi270->name);
 		return 0;
 	}
 
-
-	/* Setting scale in G, due to loss of precision if the SI unit m/s^2
-	 * is used
-	 */
 	full_scale.val1 = 2;            /* G */
 	full_scale.val2 = 0;
 	sampling_freq.val1 = 100;       /* Hz. Performance mode */
@@ -68,30 +108,18 @@ static int init_bmi270(){
 }
 
 
-void fetch_axis(){
 
-    sensor_sample_fetch(bmi270);
+void init_sensors(){
 
-		sensor_channel_get(bmi270, SENSOR_CHAN_ACCEL_XYZ, acc);
-		sensor_channel_get(bmi270, SENSOR_CHAN_GYRO_XYZ, gyr);
 
-		printk("AX: %d.%06d; AY: %d.%06d; AZ: %d.%06d; "
-		       "GX: %d.%06d; GY: %d.%06d; GZ: %d.%06d;\n",
-		       acc[0].val1, acc[0].val2,
-		       acc[1].val1, acc[1].val2,
-		       acc[2].val1, acc[2].val2,
-		       gyr[0].val1, gyr[0].val2,
-		       gyr[1].val1, gyr[1].val2,
-		       gyr[2].val1, gyr[2].val2);
+    init_bmi270();
+
+    k_thread_create(&accelometer_thread_data, accelometer_thread_stack,
+        K_THREAD_STACK_SIZEOF(accelometer_thread_stack),
+        accelometer_task, NULL, NULL, NULL,
+        ACCELOMETER_THREAD_PRIORITY, 0, K_NO_WAIT);
+
 }
 
-/*
-static const struct sensor_driver_api bmi270_driver_api = {
-    .sample_fetch = fetch_axis
-};
-*/
 
-
-
-
-SYS_INIT(init_bmi270, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);
+SYS_INIT(init_sensors, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);

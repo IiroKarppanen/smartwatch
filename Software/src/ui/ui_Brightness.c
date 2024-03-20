@@ -12,22 +12,28 @@ void ui_Brightness_screen_init(void)
 
     ui_Slider1 = lv_slider_create(ui_Brightness);
     lv_slider_set_range(ui_Slider1, 1000, 2000);
-    lv_slider_set_value(ui_Slider1, 2000, LV_ANIM_OFF);
     lv_obj_set_width(ui_Slider1, 197);
     lv_obj_set_height(ui_Slider1, 17);
-    lv_obj_set_x(ui_Slider1, -1);
-    lv_obj_set_y(ui_Slider1, 11);
     lv_obj_set_align(ui_Slider1, LV_ALIGN_CENTER);
 
 
     ui_Label4 = lv_label_create(ui_Brightness);
     lv_obj_set_width(ui_Label4, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label4, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label4, -4);
-    lv_obj_set_y(ui_Label4, -20);
+    lv_obj_set_x(ui_Label4, 0);
+    lv_obj_set_y(ui_Label4, -50);
     lv_obj_set_align(ui_Label4, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label4, "Brightness");
-    lv_obj_set_style_text_font(ui_Label4, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label4, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_BrightnessPercentage = lv_label_create(ui_Brightness);
+    lv_obj_set_width(ui_BrightnessPercentage, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_BrightnessPercentage, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_BrightnessPercentage, 1);
+    lv_obj_set_y(ui_BrightnessPercentage, 50);
+    lv_obj_set_align(ui_BrightnessPercentage, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_BrightnessPercentage, "50%");
+    lv_obj_set_style_text_font(ui_BrightnessPercentage, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Brightness, ui_event_Brightness, LV_EVENT_ALL, NULL);
 

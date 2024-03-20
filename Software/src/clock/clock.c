@@ -4,11 +4,9 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/init.h>
-#include "RV3028/RV3028.h"
-#include "rtc.h"
+#include "drivers/RV3028/RV3028.h"
+#include "clock.h"
 
-
-#define PASSWORD    0x20
 
 struct tm CurrentTime = 
 {
@@ -20,6 +18,23 @@ struct tm CurrentTime =
     .tm_mon = 11,
     .tm_year = 20,
 };
+
+#define PASSWORD    0x20
+#define CLOCK_THREAD_STACK_SIZE 1024
+#define CLOCK_THREAD_PRIORITY 6
+
+K_THREAD_STACK_DEFINE(clock_thread_stack, CLOCK_THREAD_STACK_SIZE);
+struct k_thread clock_thread_data;
+
+void clock_task()
+{
+    while (1) {
+        
+        RV3028_GetTime(&RTC, &CurrentTime);
+        k_msleep(1000);  
+    }
+}
+
 
 
 rv3028_error_t ErrorCode;
@@ -47,7 +62,6 @@ rv3028_init_t RTC_Init = {
     .Password = PASSWORD,
 };
 
-//#define I2C_DEV_NAME DT_LABEL(DT_NODELABEL(i2c2))
 
 const struct device *i2c_dev;
 
@@ -124,32 +138,19 @@ rv3028_error_t RV3028_Interface(rv3028_t* p_Device)
 }
 
 
-void start_rtc(void){
+void start_clock(void){
 
-
-    printk("RV3028 RTC\n");
-    k_sleep(K_MSEC(500));
     TWI_Init();
 
-    printk("I2c init compplete\n");
-    k_sleep(K_MSEC(500));
-
-
-    rv3028_t RTC;
     ErrorCode = RV3028_Interface(&RTC);
-
-    printk("Rtc error code fetch complete\n");
-    k_sleep(K_MSEC(500));
 
     if (ErrorCode == RV3028_NO_ERROR)
     {
-        printk("RTC initialized...");
         RV3028_DisableWP(&RTC, PASSWORD);
 
         ErrorCode = RV3028_Init(&RTC_Init, &RTC);
         if (ErrorCode == RV3028_NO_ERROR)
         {
-            printk("RTC initialized...");
             printk("  HID: %u", RTC.HID);
             printk("  VID: %u", RTC.VID);
 
@@ -158,50 +159,10 @@ void start_rtc(void){
             RV3028_UnlockWP(&RTC, PASSWORD);
             RV3028_EnableClkOut(&RTC, false, false);
 
-            while (true)
-            {
-                uint8_t Status;
-                uint8_t TSCount;
-                struct tm LastTS;
+            RV3028_GetTime(&RTC, &CurrentTime);
+            printk("  Current time: %u:%u:%u\n", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
+            k_sleep(K_MSEC(1000));
 
-                // Get the status flags
-                RV3028_GetFlags(&RTC, &Status);
-                printk("  Status: 0x%x", Status);
-
-                // Check for a Power On Reset and clear the flag
-                if (Status & RV3028_FLAG_POR)
-                {
-                    printk("  Power On Reset...");
-                    RV3028_ClearFlags(&RTC, RV3028_FLAG_POR);
-                }
-                else if (Status & RV3028_FLAG_BATTERY)
-                {
-                    RV3028_ClearFlags(&RTC, RV3028_FLAG_BATTERY);
-                    printk("  Battery switchover occurred...");
-
-                    if (RTC.IsTSEnabled)
-                    {
-                        RV3028_GetTS(&RTC, &LastTS, &TSCount);
-                        printk("  Last timestamp: %u:%u:%u", LastTS.tm_hour, LastTS.tm_min, LastTS.tm_sec);
-                    }
-                }
-                else if (Status & RV3028_FLAG_EVENT)
-                {
-                    printk("  Event...");
-                    RV3028_ClearFlags(&RTC, RV3028_FLAG_EVENT);
-
-                    if (RTC.IsTSEnabled)
-                    {
-                        RV3028_GetTS(&RTC, &LastTS, &TSCount);
-                        printk("  Last timestamp: %u:%u:%u", LastTS.tm_hour, LastTS.tm_min, LastTS.tm_sec);
-                    }
-                }
-
-                RV3028_GetTime(&RTC, &CurrentTime);
-                printk("  Current time: %u:%u:%u\n", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
-
-                k_sleep(K_MSEC(1000));
-            }
         }
         else
         {
@@ -212,7 +173,16 @@ void start_rtc(void){
     {
         printk("Can not initialize RTC interface. Error: %u", ErrorCode);
     }
+
+
+    // Create clock thread
+    k_thread_create(&clock_thread_data, clock_thread_stack,
+        K_THREAD_STACK_SIZEOF(clock_thread_stack),
+        clock_task, NULL, NULL, NULL,
+        CLOCK_THREAD_PRIORITY, 0, K_NO_WAIT);
+
+
 }
 
 
-//SYS_INIT(start_rtc, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);
+SYS_INIT(start_clock, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);

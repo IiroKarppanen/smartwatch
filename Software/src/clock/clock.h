@@ -1,9 +1,6 @@
-#ifndef RTC_H_
-#define RTC_H_
-
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/i2c.h>
-#include "RV3028/RV3028.h"
+#include "drivers/RV3028/RV3028.h"
 
 #define PASSWORD    0x20
 
@@ -20,6 +17,5 @@ void TWI_Init(void);
 rv3028_error_t RV3028_Write(uint8_t Device_Addr, uint8_t Reg_Addr, const uint8_t *p_Reg_Data, uint32_t Length);
 rv3028_error_t RV3028_Read(uint8_t Device_Addr, uint8_t Reg_Addr, uint8_t *p_Reg_Data, uint32_t Length);
 rv3028_error_t RV3028_Interface(rv3028_t* p_Device);
-void start_rtc(void);
+void start_clock(void);
 
-#endif /* RTC_H_ */

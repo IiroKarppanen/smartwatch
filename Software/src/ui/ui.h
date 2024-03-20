@@ -11,40 +11,29 @@ extern "C" {
 #endif
 
 #include "lvgl.h"
-
+#include "icons/icons.h"
 #include "ui_helpers.h"
 #include "ui_events.h"
 // SCREEN: ui_Home
 void ui_Home_screen_init(void);
 void ui_event_Home(lv_event_t * e);
 extern lv_obj_t * ui_Home;
-extern lv_obj_t * ui_Label1;
-extern lv_obj_t * ui_Arc4;
-extern lv_obj_t * ui_Label8;
-extern lv_obj_t * ui_Arc1;
-extern lv_obj_t * ui_Arc2;
-extern lv_obj_t * ui_Label9;
-extern lv_obj_t * ui_Label10;
-extern lv_obj_t * ui_Label2;
-extern lv_obj_t * ui_Label11;
-extern lv_obj_t * ui_Arc6;
-extern lv_obj_t * ui_Arc5;
-extern lv_obj_t * ui_Label12;
-extern lv_obj_t * ui_Label13;
-extern lv_obj_t * ui_Label14;
+extern lv_obj_t * ui_TimeLabel;
+extern lv_obj_t * ui_DateLabel;
+extern lv_obj_t * ui_BatteryLabel;
+extern lv_obj_t * ui_ArcBottomRight;
+extern lv_obj_t * ui_ArcTopRight;
+extern lv_obj_t * ui_ArcTopLeft;
+extern lv_obj_t * ui_ArcBottomLeft;
+extern lv_obj_t * ui_BatteryImage;
 // SCREEN: ui_Battery
 void ui_Battery_screen_init(void);
 void ui_event_Battery(lv_event_t * e);
 extern lv_obj_t * ui_Battery;
 extern lv_obj_t * ui_Arc3;
 extern lv_obj_t * ui_Label5;
-extern lv_obj_t * ui_Label6;
 extern lv_obj_t * ui_Switch1;
 extern lv_obj_t * ui_Label7;
-// SCREEN: ui_List
-void ui_List_screen_init(void);
-void ui_event_List(lv_event_t * e);
-extern lv_obj_t * ui_List;
 // SCREEN: ui_Pulse
 void ui_Pulse_screen_init(void);
 void ui_event_Pulse(lv_event_t * e);
@@ -53,22 +42,56 @@ extern lv_obj_t * ui_Image1;
 extern lv_obj_t * ui_Label3;
 extern lv_obj_t * ui_Container1;
 extern lv_obj_t * ui_Chart1;
+extern lv_obj_t * ui_Label6;
+// SCREEN: ui_mainMenu
+void ui_mainMenu_screen_init(void);
+void ui_event_mainMenu(lv_event_t * e);
+extern lv_obj_t * ui_mainMenu;
 // SCREEN: ui_Brightness
 void ui_Brightness_screen_init(void);
 void ui_event_Brightness(lv_event_t * e);
 extern lv_obj_t * ui_Brightness;
 extern lv_obj_t * ui_Slider1;
 extern lv_obj_t * ui_Label4;
+extern lv_obj_t * ui_BrightnessPercentage;
 // SCREEN: ui_Time
 void ui_Time_screen_init(void);
 void ui_event_Time(lv_event_t * e);
 extern lv_obj_t * ui_Time;
-void ui_event_Spinbox2(lv_event_t * e);
-extern lv_obj_t * ui_Spinbox2;
+extern lv_obj_t * ui_Roller1;
+extern lv_obj_t * ui_Roller2;
+extern lv_obj_t * ui_Label1;
+extern lv_obj_t * ui_Roller3;
+extern lv_obj_t * ui_Label2;
+extern lv_obj_t * ui_Label8;
+// SCREEN: ui_Date
+void ui_Date_screen_init(void);
+void ui_event_Date(lv_event_t * e);
+extern lv_obj_t * ui_Date;
+extern lv_obj_t * ui_Roller4;
+extern lv_obj_t * ui_Roller5;
+extern lv_obj_t * ui_Label9;
+extern lv_obj_t * ui_Roller6;
+extern lv_obj_t * ui_Label10;
+extern lv_obj_t * ui_Label11;
+// SCREEN: ui_SensorTest
+void ui_SensorTest_screen_init(void);
+void ui_event_SensorTest(lv_event_t * e);
+extern lv_obj_t * ui_SensorTest;
+extern lv_obj_t * ui_Label12;
+extern lv_obj_t * ui_AYLabel;
+extern lv_obj_t * ui_AZLabel;
+extern lv_obj_t * ui_Label16;
+extern lv_obj_t * ui_GYLabel;
+extern lv_obj_t * ui_GZLabel;
+extern lv_obj_t * ui_GXLabel;
+extern lv_obj_t * ui_AXLabel;
 extern lv_obj_t * ui____initial_actions0;
 
-LV_IMG_DECLARE(ui_img_1111712444);    
-LV_IMG_DECLARE(ui_img_calendar); 
+LV_IMG_DECLARE(ui_img_battery_half_png);    // assets\battery_half.png
+LV_IMG_DECLARE(ui_img_1111712444);    // assets\icons8-heart-48.png
+
+
 
 void ui_init(void);
 

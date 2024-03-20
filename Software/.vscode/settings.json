@@ -37,7 +37,10 @@
         "thread_stack.h": "c",
         "log.h": "c",
         "math.h": "c",
-        "lvgl.h": "c"
+        "lvgl.h": "c",
+        "icons.h": "c",
+        "rtc.h": "c",
+        "sensor_data.h": "c"
     },
     "files.watcherExclude": {
         "**/target": true

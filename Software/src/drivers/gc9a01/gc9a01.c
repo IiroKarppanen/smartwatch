@@ -72,6 +72,7 @@ LOG_MODULE_REGISTER(gc9a01, CONFIG_DISPLAY_LOG_LEVEL_ERR);
 
 #define GC9A01A_INREGEN1 0xFE ///< Inter register enable 1
 
+
 #define MADCTL_MY 0x80  ///< Bottom to top
 #define MADCTL_MX 0x40  ///< Right to left
 #define MADCTL_MV 0x20  ///< Reverse Mode
@@ -79,6 +80,7 @@ LOG_MODULE_REGISTER(gc9a01, CONFIG_DISPLAY_LOG_LEVEL_ERR);
 #define MADCTL_RGB 0x00 ///< Red-Green-Blue pixel order
 #define MADCTL_BGR 0x08 ///< Blue-Green-Red pixel order
 #define MADCTL_MH 0x04  ///< LCD refresh right to left
+
 
 #define DISPLAY_WIDTH         DT_INST_PROP(0, width)
 #define DISPLAY_HEIGHT        DT_INST_PROP(0, height)
@@ -176,6 +178,8 @@ struct gc9a01_frame {
 };
 
 static struct gc9a01_frame frame = {{0, 0}, {DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1}};
+
+
 
 static inline int gc9a01_write_cmd(const struct device *dev, uint8_t cmd,
                                    const uint8_t *data, size_t len)
@@ -302,11 +306,29 @@ static void gc9a01_get_capabilities(const struct device *dev,
     caps->screen_info = SCREEN_INFO_MONO_MSB_FIRST;
 }
 
-static int gc9a01_set_orientation(const struct device *dev,
-                                  const enum display_orientation
-                                  orientation) {
-    LOG_ERR("Unsupported");
-    return -ENOTSUP;
+static int gc9a01a_set_orientation(const struct device *dev,
+				   const enum display_orientation orientation)
+{
+
+	int r;
+	uint8_t tx_data = MADCTL_BGR;
+
+	if (orientation == DISPLAY_ORIENTATION_NORMAL) { // works 0
+		tx_data |= 0;
+	} else if (orientation == DISPLAY_ORIENTATION_ROTATED_90) { // works CW 90
+		tx_data |= MADCTL_MV | MADCTL_MY ;
+	} else if (orientation == DISPLAY_ORIENTATION_ROTATED_180) { // works CW 180
+		tx_data |= MADCTL_ML;
+	} else if (orientation == DISPLAY_ORIENTATION_ROTATED_270) { // works CW 270
+		tx_data |= MADCTL_MV | MADCTL_MX ;
+	}
+
+	r = gc9a01_write_cmd(dev, GC9A01A_MADCTL, &tx_data, 1U);
+	if (r < 0) {
+		return r;
+	}
+
+	return 0;
 }
 
 static int gc9a01_set_pixel_format(const struct device *dev,
@@ -342,6 +364,7 @@ static int gc9a01_controller_init(const struct device *dev)
     }
 
 
+    //gc9a01a_set_orientation(dev, DISPLAY_ORIENTATION_ROTATED_180);
 
     return 0;
 }
@@ -396,7 +419,7 @@ static struct display_driver_api gc9a01_driver_api = {
     .set_contrast = gc9a01_set_contrast,
     .get_capabilities = gc9a01_get_capabilities,
     .set_pixel_format = gc9a01_set_pixel_format,
-    .set_orientation = gc9a01_set_orientation,
+    .set_orientation = gc9a01a_set_orientation,
 };
 
 
