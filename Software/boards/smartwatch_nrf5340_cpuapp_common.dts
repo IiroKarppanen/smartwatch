@@ -83,6 +83,7 @@
 	status = "disabled";
 };
 
+
 &sw_pwm {
 	status = "okay";
 	channel-gpios = <&gpio0 7 PWM_POLARITY_INVERTED>;

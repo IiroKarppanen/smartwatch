@@ -14,6 +14,20 @@ extern "C" {
 #include "icons/icons.h"
 #include "ui_helpers.h"
 #include "ui_events.h"
+// SCREEN: ui_mainMenu
+void ui_mainMenu_screen_init(void);
+void ui_event_mainMenu(lv_event_t * e);
+extern lv_obj_t * ui_mainMenu;
+extern lv_obj_t * ui_Arc1;
+extern lv_obj_t * ui_Arc2;
+extern lv_obj_t * ui_Arc4;
+extern lv_obj_t * ui_Arc5;
+extern lv_obj_t * ui_Arc6;
+extern lv_obj_t * ui_Image3;
+extern lv_obj_t * ui_Image4;
+extern lv_obj_t * ui_Image5;
+extern lv_obj_t * ui_Image6;
+extern lv_obj_t * ui_Image8;
 // SCREEN: ui_Home
 void ui_Home_screen_init(void);
 void ui_event_Home(lv_event_t * e);
@@ -21,11 +35,19 @@ extern lv_obj_t * ui_Home;
 extern lv_obj_t * ui_TimeLabel;
 extern lv_obj_t * ui_DateLabel;
 extern lv_obj_t * ui_BatteryLabel;
-extern lv_obj_t * ui_ArcBottomRight;
-extern lv_obj_t * ui_ArcTopRight;
-extern lv_obj_t * ui_ArcTopLeft;
-extern lv_obj_t * ui_ArcBottomLeft;
-extern lv_obj_t * ui_BatteryImage;
+extern lv_obj_t * ui_Image7;
+// SCREEN: ui_settingsMenu
+void ui_settingsMenu_screen_init(void);
+void ui_event_settingsMenu(lv_event_t * e);
+extern lv_obj_t * ui_settingsMenu;
+extern lv_obj_t * ui_Image9;
+extern lv_obj_t * ui_Image10;
+extern lv_obj_t * ui_Image11;
+extern lv_obj_t * ui_Image12;
+// SCREEN: ui_exerciseMenu
+void ui_exerciseMenu_screen_init(void);
+void ui_event_exerciseMenu(lv_event_t * e);
+extern lv_obj_t * ui_exerciseMenu;
 // SCREEN: ui_Battery
 void ui_Battery_screen_init(void);
 void ui_event_Battery(lv_event_t * e);
@@ -43,10 +65,6 @@ extern lv_obj_t * ui_Label3;
 extern lv_obj_t * ui_Container1;
 extern lv_obj_t * ui_Chart1;
 extern lv_obj_t * ui_Label6;
-// SCREEN: ui_mainMenu
-void ui_mainMenu_screen_init(void);
-void ui_event_mainMenu(lv_event_t * e);
-extern lv_obj_t * ui_mainMenu;
 // SCREEN: ui_Brightness
 void ui_Brightness_screen_init(void);
 void ui_event_Brightness(lv_event_t * e);
@@ -88,7 +106,16 @@ extern lv_obj_t * ui_GXLabel;
 extern lv_obj_t * ui_AXLabel;
 extern lv_obj_t * ui____initial_actions0;
 
-LV_IMG_DECLARE(ui_img_battery_half_png);    // assets\battery_half.png
+LV_IMG_DECLARE(ui_img_exercise1_png);    // assets\exercise1.png
+LV_IMG_DECLARE(ui_img_headphones_png);    // assets\headphones.png
+LV_IMG_DECLARE(ui_img_heart_png);    // assets\heart.png
+LV_IMG_DECLARE(ui_img_settings_icon_png);    // assets\settings_icon.png
+LV_IMG_DECLARE(ui_img_battery_full_png);    // assets\battery_full.png
+LV_IMG_DECLARE(ui_img_battery_mid_png);    // assets\battery_mid.png
+LV_IMG_DECLARE(ui_img_clock_png);    // assets\clock.png
+LV_IMG_DECLARE(ui_img_bluetooth_png);    // assets\bluetooth.png
+LV_IMG_DECLARE(ui_img_brightness_png);    // assets\brightness.png
+LV_IMG_DECLARE(ui_img_calendar_png);    // assets\calendar.png
 LV_IMG_DECLARE(ui_img_1111712444);    // assets\icons8-heart-48.png
 
 

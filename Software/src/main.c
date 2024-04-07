@@ -119,6 +119,9 @@ void main(void){
 	ui_init();
 
 
+	
+
+
 
 	/*
     k_thread_create(&pwm_thread_data, pwm_thread_stack,

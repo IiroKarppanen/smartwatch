@@ -40,7 +40,8 @@
         "lvgl.h": "c",
         "icons.h": "c",
         "rtc.h": "c",
-        "sensor_data.h": "c"
+        "sensor_data.h": "c",
+        "ui.h": "c"
     },
     "files.watcherExclude": {
         "**/target": true

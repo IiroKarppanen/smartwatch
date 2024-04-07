@@ -5,227 +5,148 @@
 
 #include "ui.h"
 
-
-int scrolling = 0;
-
-
-static void event_Brightness(lv_event_t * e){
-    printk("Released\n");
-        //lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-        _ui_screen_change(&ui_Brightness, LV_SCR_LOAD_ANIM_FADE_ON, 150, 0, NULL);
-}
-
-static void event_Date(lv_event_t * e){
-    printk("Released\n");
-        //lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-        _ui_screen_change(&ui_Date, LV_SCR_LOAD_ANIM_FADE_ON, 150, 0, NULL);
-}
-
-static void event_Time(lv_event_t * e){
-    printk("Released\n");
-        //lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-        _ui_screen_change(&ui_Time, LV_SCR_LOAD_ANIM_FADE_ON, 150, 0, NULL);
-}
-
-static void event_Battery(lv_event_t * e){
-    printk("Released\n");
-        //lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-        _ui_screen_change(&ui_Battery, LV_SCR_LOAD_ANIM_FADE_ON, 1, 0, NULL);
-}
-
-
-/*
-static void event_handler(lv_event_t * e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t * obj = lv_event_get_target(e);
-
-
-    if (code == LV_EVENT_SCROLL_BEGIN) {
-        scrolling = 1;
-    } 
-    if (code == LV_EVENT_SCROLL_END) {
-        scrolling = 0;
-    } 
-
-    if(!scrolling){
-        if (code == LV_EVENT_PRESSING) {
-            printk("Pressing\n");
-            //lv_obj_set_style_bg_opa(obj, LV_OPA_20, LV_STATE_DEFAULT);
-        } 
-        if (code == LV_EVENT_RELEASED) {
-            printk("Released\n");
-            //lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-            _ui_screen_change(&ui_Brightness, LV_SCR_LOAD_ANIM_FADE_ON, 150, 0, NULL);
-        }
-    }
-    
-
-}
-*/
-
-
-
-
 void ui_mainMenu_screen_init(void)
 {
     ui_mainMenu = lv_obj_create(NULL);
-    lv_obj_clear_flag(ui_mainMenu, LV_OBJ_FLAG_SCROLLABLE);      
+    lv_obj_clear_flag(ui_mainMenu, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_mainMenu, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_mainMenu, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    
-    //static lv_style_t style_screen;
-    //lv_style_init(&style_screen);
-    //lv_style_set_bg_color(&style_screen, lv_color_make(0, 0, 0)); 
-    //lv_obj_add_style(ui_mainMenu, &style_screen, LV_PART_MAIN);
+    ui_Arc1 = lv_arc_create(ui_mainMenu);
+    lv_obj_set_width(ui_Arc1, 68);
+    lv_obj_set_height(ui_Arc1, 68);
+    lv_obj_set_x(ui_Arc1, 76);
+    lv_obj_set_y(ui_Arc1, 22);
+    lv_obj_set_align(ui_Arc1, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc1, 100);
+    lv_arc_set_bg_angles(ui_Arc1, 0, 360);
+    lv_obj_set_style_arc_width(ui_Arc1, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_set_style_arc_color(ui_Arc1, lv_color_hex(0xA4A4A4), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc1, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc1, 3, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    // Create a style for the button text
-    static lv_style_t style_btn_text;
-    lv_style_init(&style_btn_text);
-    lv_style_set_text_font(&style_btn_text, &lv_font_montserrat_18);
+    lv_obj_set_style_bg_color(ui_Arc1, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc1, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
-    // Create a style for the button symbols
-    static lv_style_t style_btn_symbol;
-    lv_style_init(&style_btn_symbol);
-    lv_style_set_text_font(&style_btn_symbol, &icons_26);
-    lv_style_set_text_color(&style_btn_symbol, lv_color_make(51, 160, 255));
-    lv_style_set_width(&style_btn_symbol, 35);
+    ui_Arc2 = lv_arc_create(ui_mainMenu);
+    lv_obj_set_width(ui_Arc2, 68);
+    lv_obj_set_height(ui_Arc2, 68);
+    lv_obj_set_x(ui_Arc2, 0);
+    lv_obj_set_y(ui_Arc2, 79);
+    lv_obj_set_align(ui_Arc2, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc2, 100);
+    lv_arc_set_bg_angles(ui_Arc2, 0, 360);
+    lv_obj_set_style_arc_width(ui_Arc2, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    static lv_style_t style_btn_symbol_yellow;
-    lv_style_init(&style_btn_symbol);
-    lv_style_set_text_font(&style_btn_symbol, &icons_26);
-    lv_style_set_width(&style_btn_symbol, 35);
+    lv_obj_set_style_arc_color(ui_Arc2, lv_color_hex(0x7CFF9A), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc2, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc2, 3, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    
-    static lv_style_t style_btn;
-    lv_style_init(&style_btn);
-    lv_style_set_radius(&style_btn, LV_RADIUS_CIRCLE);  
-    lv_style_set_pad_all(&style_btn, 25); 
-    lv_style_set_text_font(&style_btn, &lv_font_montserrat_16);
-    lv_style_set_border_width(&style_btn, 0);
-    lv_style_set_bg_color(&style_btn, lv_color_make(255, 255, 255)); 
-    lv_style_set_bg_opa(&style_btn, LV_OPA_TRANSP);
+    lv_obj_set_style_bg_color(ui_Arc2, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc2, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
-    static lv_style_t style_btn_image;
-    lv_style_init(&style_btn_image);
-    lv_style_set_width(&style_btn_image, 35);
+    ui_Arc4 = lv_arc_create(ui_mainMenu);
+    lv_obj_set_width(ui_Arc4, 68);
+    lv_obj_set_height(ui_Arc4, 68);
+    lv_obj_set_x(ui_Arc4, -46);
+    lv_obj_set_y(ui_Arc4, -64);
+    lv_obj_set_align(ui_Arc4, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc4, 100);
+    lv_arc_set_bg_angles(ui_Arc4, 0, 360);
+    lv_obj_set_style_arc_width(ui_Arc4, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_set_style_arc_color(ui_Arc4, lv_color_hex(0x628EFF), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc4, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc4, 3, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    /*Create a list*/
-    lv_obj_t * menuList = lv_list_create(ui_mainMenu);
-    lv_obj_set_size(menuList, 215, 240);
-    lv_obj_center(menuList);
-    //lv_obj_add_event_cb(menuList, event_handler, LV_EVENT_ALL, NULL);
-    
+    lv_obj_set_style_bg_color(ui_Arc4, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc4, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
-    static lv_style_t style_list;
-    lv_style_init(&style_list);
-    lv_style_set_bg_color(&style_list, lv_color_make(0, 0, 0)); 
-    lv_style_set_bg_opa(&style_list, LV_OPA_TRANSP);
-    lv_style_set_border_width(&style_list, 0);
-    lv_obj_add_style(menuList, &style_list, LV_PART_MAIN);
+    ui_Arc5 = lv_arc_create(ui_mainMenu);
+    lv_obj_set_width(ui_Arc5, 68);
+    lv_obj_set_height(ui_Arc5, 68);
+    lv_obj_set_x(ui_Arc5, -76);
+    lv_obj_set_y(ui_Arc5, 22);
+    lv_obj_set_align(ui_Arc5, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc5, 100);
+    lv_arc_set_bg_angles(ui_Arc5, 0, 360);
+    lv_obj_set_style_arc_width(ui_Arc5, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_set_style_arc_color(ui_Arc5, lv_color_hex(0xFF4B4B), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc5, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc5, 3, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
+    lv_obj_set_style_bg_color(ui_Arc5, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc5, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
+    ui_Arc6 = lv_arc_create(ui_mainMenu);
+    lv_obj_set_width(ui_Arc6, 68);
+    lv_obj_set_height(ui_Arc6, 68);
+    lv_obj_set_x(ui_Arc6, 46);
+    lv_obj_set_y(ui_Arc6, -64);
+    lv_obj_set_align(ui_Arc6, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc6, 100);
+    lv_arc_set_bg_angles(ui_Arc6, 0, 360);
+    lv_obj_set_style_arc_width(ui_Arc6, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    // Exercise setting button
-    lv_obj_t * exercise_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    //lv_obj_add_event_cb(exercise_btn, event_handler1, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(exercise_btn, &style_btn, LV_PART_MAIN); 
+    lv_obj_set_style_arc_color(ui_Arc6, lv_color_hex(0xFF40FA), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc6, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc6, 3, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    lv_obj_t * exercise_icon_label = lv_label_create(exercise_btn);
-    lv_label_set_text(exercise_icon_label, RUNNING_ICON_26); 
-    lv_obj_add_style(exercise_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-    lv_obj_set_style_text_color(exercise_icon_label, lv_color_make(3, 152, 252), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(ui_Arc6, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc6, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
-    lv_obj_t * exercise_text_label = lv_label_create(exercise_btn);
-    lv_label_set_text(exercise_text_label, "Exercise"); 
-    lv_obj_add_style(exercise_text_label, &style_btn_text, LV_PART_MAIN);
+    ui_Image3 = lv_img_create(ui_mainMenu);
+    lv_img_set_src(ui_Image3, &ui_img_exercise1_png);
+    lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);   /// 38
+    lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT);    /// 38
+    lv_obj_set_x(ui_Image3, 46);
+    lv_obj_set_y(ui_Image3, -64);
+    lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    ui_Image4 = lv_img_create(ui_mainMenu);
+    lv_img_set_src(ui_Image4, &ui_img_headphones_png);
+    lv_obj_set_width(ui_Image4, LV_SIZE_CONTENT);   /// 38
+    lv_obj_set_height(ui_Image4, LV_SIZE_CONTENT);    /// 38
+    lv_obj_set_x(ui_Image4, -46);
+    lv_obj_set_y(ui_Image4, -64);
+    lv_obj_set_align(ui_Image4, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    
-    // Battery setting button
-    lv_obj_t * battery_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    lv_obj_add_event_cb(battery_btn, event_Battery, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(battery_btn, &style_btn, LV_PART_MAIN); 
+    ui_Image5 = lv_img_create(ui_mainMenu);
+    lv_img_set_src(ui_Image5, &ui_img_heart_png);
+    lv_obj_set_width(ui_Image5, LV_SIZE_CONTENT);   /// 38
+    lv_obj_set_height(ui_Image5, LV_SIZE_CONTENT);    /// 38
+    lv_obj_set_x(ui_Image5, -76);
+    lv_obj_set_y(ui_Image5, 22);
+    lv_obj_set_align(ui_Image5, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    lv_obj_t * ui_ImageTest2 = lv_img_create(battery_btn);
-    lv_img_set_src(ui_ImageTest2, &ui_img_battery_half_png);
-    lv_obj_add_style(ui_ImageTest2, &style_btn_image, LV_PART_MAIN);
-    lv_obj_align(ui_ImageTest2, LV_ALIGN_CENTER, 0, 0); 
-    
+    ui_Image6 = lv_img_create(ui_mainMenu);
+    lv_img_set_src(ui_Image6, &ui_img_settings_icon_png);
+    lv_obj_set_width(ui_Image6, LV_SIZE_CONTENT);   /// 38
+    lv_obj_set_height(ui_Image6, LV_SIZE_CONTENT);    /// 38
+    lv_obj_set_x(ui_Image6, 76);
+    lv_obj_set_y(ui_Image6, 22);
+    lv_obj_set_align(ui_Image6, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image6, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image6, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    //lv_obj_t * battery_icon_label = lv_label_create(battery_btn);
-    //lv_label_set_text(battery_icon_label, &ui_img_battery_half); 
-    //lv_obj_add_style(battery_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-    //lv_obj_set_style_text_color(battery_icon_label, lv_color_hex(0x40FF6C), LV_PART_MAIN);
-
-    lv_obj_t * battery_text_label = lv_label_create(battery_btn);
-    lv_label_set_text(battery_text_label, "Battery"); 
-    lv_obj_add_style(battery_text_label, &style_btn_text, LV_PART_MAIN);
-
-
-    // Brightness setting button
-    lv_obj_t * brightness_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    lv_obj_add_event_cb(brightness_btn, event_Brightness, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(brightness_btn, &style_btn, LV_PART_MAIN); 
-
-    lv_obj_t * brightness_icon_label = lv_label_create(brightness_btn);
-    lv_label_set_text(brightness_icon_label, EYE_ICON_26); 
-    lv_obj_add_style(brightness_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-
-    lv_obj_t * brightness_text_label = lv_label_create(brightness_btn);
-    lv_label_set_text(brightness_text_label, "Brightness"); 
-    lv_obj_add_style(brightness_text_label, &style_btn_text, LV_PART_MAIN);
-    lv_obj_set_style_text_color(brightness_icon_label, lv_color_make(255, 246, 125), LV_PART_MAIN);
-
-
-    // Time setting button
-    lv_obj_t * time_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    lv_obj_add_event_cb(time_btn, event_Time, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(time_btn, &style_btn, LV_PART_MAIN); 
-
-    lv_obj_t * time_icon_label = lv_label_create(time_btn);
-    lv_label_set_text(time_icon_label, CLOCK_ICON_26); 
-    lv_obj_add_style(time_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-    lv_obj_set_style_text_color(time_icon_label, lv_color_make(255, 255, 255), LV_PART_MAIN);
-
-    lv_obj_t * time_text_label = lv_label_create(time_btn);
-    lv_label_set_text(time_text_label, "Time"); 
-    lv_obj_add_style(time_text_label, &style_btn_text, LV_PART_MAIN);
-
-
-    // Date setting button
-    lv_obj_t * date_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    lv_obj_add_event_cb(date_btn, event_Date, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(date_btn, &style_btn, LV_PART_MAIN); 
-
-    lv_obj_t * date_icon_label = lv_label_create(date_btn);
-    lv_label_set_text(date_icon_label, CLOCK_ICON_26); 
-    lv_obj_add_style(date_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-    lv_obj_set_style_text_color(date_icon_label, lv_color_make(255, 255, 255), LV_PART_MAIN);
-
-    lv_obj_t * date_text_label = lv_label_create(date_btn);
-    lv_label_set_text(date_text_label, "date"); 
-    lv_obj_add_style(date_text_label, &style_btn_text, LV_PART_MAIN);
-
-
-    // Bluetooth setting button
-    lv_obj_t * bluetooth_btn = lv_list_add_btn(menuList, NULL, NULL); 
-    //lv_obj_add_event_cb(bluetooth_btn, event_handler1, LV_EVENT_SHORT_CLICKED, NULL);
-    lv_obj_add_style(bluetooth_btn, &style_btn, LV_PART_MAIN); 
-
-    lv_obj_t * bluetooth_icon_label = lv_label_create(bluetooth_btn);
-    lv_label_set_text(bluetooth_icon_label, BLUETOOTH_ICON_26); 
-    lv_obj_add_style(bluetooth_icon_label, &style_btn_symbol, LV_PART_MAIN); 
-
-    lv_obj_t * bluetooth_text_label = lv_label_create(bluetooth_btn);
-    lv_label_set_text(bluetooth_text_label, "Bluetooth"); 
-    lv_obj_add_style(bluetooth_text_label, &style_btn_text, LV_PART_MAIN);
-    lv_obj_set_style_text_color(bluetooth_icon_label, lv_color_make(3, 152, 252), LV_PART_MAIN);
-
+    ui_Image8 = lv_img_create(ui_mainMenu);
+    lv_img_set_src(ui_Image8, &ui_img_battery_full_png);
+    lv_obj_set_width(ui_Image8, LV_SIZE_CONTENT);   /// 38
+    lv_obj_set_height(ui_Image8, LV_SIZE_CONTENT);    /// 38
+    lv_obj_set_x(ui_Image8, 0);
+    lv_obj_set_y(ui_Image8, 79);
+    lv_obj_set_align(ui_Image8, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image8, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image8, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     lv_obj_add_event_cb(ui_mainMenu, ui_event_mainMenu, LV_EVENT_ALL, NULL);
-    
 
 }

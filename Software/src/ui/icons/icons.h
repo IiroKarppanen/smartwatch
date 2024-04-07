@@ -2,6 +2,10 @@
 //#include "icons/icons.h" add to (ui.h)
 
 
+extern lv_font_t roboto_48; 
+extern lv_font_t orbitron_24;
+
+
 
 extern lv_font_t icons_36; // 0xf004, 
 extern lv_font_t icons_16; // 0xf54b

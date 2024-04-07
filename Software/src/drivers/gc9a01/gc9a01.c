@@ -282,11 +282,21 @@ static void *gc9a01_get_framebuffer(const struct device *dev)
     return NULL;
 }
 
-static int gc9a01_set_brightness(const struct device *dev,
+void gc9a01_set_brightness(const struct device *dev,
                                  const uint8_t brightness)
 {
-    LOG_WRN("not supported");
-    return -ENOTSUP;
+    if(brightness == 0){
+        const struct gc9a01_config *config = dev->config;
+    gpio_pin_set_dt(&config->bl_gpio, 0);
+    }
+    if(brightness == 100){
+        const struct gc9a01_config *config = dev->config;
+    gpio_pin_set_dt(&config->bl_gpio, 1);
+    }
+
+    const struct gc9a01_config *config = dev->config;
+    gpio_pin_set_dt(&config->bl_gpio, 0);
+    
 }
 
 static int gc9a01_set_contrast(const struct device *dev, uint8_t contrast)
@@ -305,6 +315,8 @@ static void gc9a01_get_capabilities(const struct device *dev,
     caps->current_pixel_format = PIXEL_FORMAT_BGR_565;
     caps->screen_info = SCREEN_INFO_MONO_MSB_FIRST;
 }
+
+
 
 static int gc9a01a_set_orientation(const struct device *dev,
 				   const enum display_orientation orientation)
@@ -363,9 +375,10 @@ static int gc9a01_controller_init(const struct device *dev)
         i++;
     }
 
-
+    //gpio_pin_set_dt(&config->bl_gpio, 0);
     //gc9a01a_set_orientation(dev, DISPLAY_ORIENTATION_ROTATED_180);
 
+    
     return 0;
 }
 
@@ -391,6 +404,7 @@ static int gc9a01_init(const struct device *dev)
     }
     gpio_pin_configure_dt(&config->reset_gpio, GPIO_OUTPUT_ACTIVE);
     gpio_pin_configure_dt(&config->dc_gpio, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&config->bl_gpio, GPIO_OUTPUT_INACTIVE);
     k_msleep(500);
 
     if (!device_is_ready(config->bl_gpio.port)) {

@@ -9,6 +9,22 @@
 ///////////////////// VARIABLES ////////////////////
 
 
+// SCREEN: ui_mainMenu
+void ui_mainMenu_screen_init(void);
+void ui_event_mainMenu(lv_event_t * e);
+lv_obj_t * ui_mainMenu;
+lv_obj_t * ui_Arc1;
+lv_obj_t * ui_Arc2;
+lv_obj_t * ui_Arc4;
+lv_obj_t * ui_Arc5;
+lv_obj_t * ui_Arc6;
+lv_obj_t * ui_Image3;
+lv_obj_t * ui_Image4;
+lv_obj_t * ui_Image5;
+lv_obj_t * ui_Image6;
+lv_obj_t * ui_Image8;
+
+
 // SCREEN: ui_Home
 void ui_Home_screen_init(void);
 void ui_event_Home(lv_event_t * e);
@@ -16,11 +32,23 @@ lv_obj_t * ui_Home;
 lv_obj_t * ui_TimeLabel;
 lv_obj_t * ui_DateLabel;
 lv_obj_t * ui_BatteryLabel;
-lv_obj_t * ui_ArcBottomRight;
-lv_obj_t * ui_ArcTopRight;
-lv_obj_t * ui_ArcTopLeft;
-lv_obj_t * ui_ArcBottomLeft;
-lv_obj_t * ui_BatteryImage;
+lv_obj_t * ui_Image7;
+
+
+// SCREEN: ui_settingsMenu
+void ui_settingsMenu_screen_init(void);
+void ui_event_settingsMenu(lv_event_t * e);
+lv_obj_t * ui_settingsMenu;
+lv_obj_t * ui_Image9;
+lv_obj_t * ui_Image10;
+lv_obj_t * ui_Image11;
+lv_obj_t * ui_Image12;
+
+
+// SCREEN: ui_exerciseMenu
+void ui_exerciseMenu_screen_init(void);
+void ui_event_exerciseMenu(lv_event_t * e);
+lv_obj_t * ui_exerciseMenu;
 
 
 // SCREEN: ui_Battery
@@ -42,12 +70,6 @@ lv_obj_t * ui_Label3;
 lv_obj_t * ui_Container1;
 lv_obj_t * ui_Chart1;
 lv_obj_t * ui_Label6;
-
-
-// SCREEN: ui_mainMenu
-void ui_mainMenu_screen_init(void);
-void ui_event_mainMenu(lv_event_t * e);
-lv_obj_t * ui_mainMenu;
 
 
 // SCREEN: ui_Brightness
@@ -96,6 +118,7 @@ lv_obj_t * ui_GZLabel;
 lv_obj_t * ui_GXLabel;
 lv_obj_t * ui_AXLabel;
 lv_obj_t * ui____initial_actions0;
+const lv_img_dsc_t * ui_imgset_exercise[1] = {&ui_img_exercise1_png};
 const lv_img_dsc_t * ui_imgset_1730909992[1] = {&ui_img_1111712444};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
@@ -109,6 +132,15 @@ const lv_img_dsc_t * ui_imgset_1730909992[1] = {&ui_img_1111712444};
 ///////////////////// ANIMATIONS ////////////////////
 
 ///////////////////// FUNCTIONS ////////////////////
+void ui_event_mainMenu(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
+}
 void ui_event_Home(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -122,15 +154,44 @@ void ui_event_Home(lv_event_t * e)
         _ui_screen_change(&ui_Pulse, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Pulse_screen_init);
     }
 }
+void ui_event_settingsMenu(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
+}
+void ui_event_exerciseMenu(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
+}
 void ui_event_Battery(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_GESTURE) {
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
         _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
     }
-
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
+    }
 }
 void ui_event_Pulse(lv_event_t * e)
 {
@@ -145,20 +206,11 @@ void ui_event_Pulse(lv_event_t * e)
         _ui_screen_change(&ui_SensorTest, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_SensorTest_screen_init);
     }
 }
-void ui_event_mainMenu(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
-        lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
-    }
-}
 void ui_event_Brightness(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_GESTURE) {
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
         _ui_screen_change(&ui_mainMenu, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_mainMenu_screen_init);
     }
@@ -199,14 +251,16 @@ void ui_init(void)
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                true, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
+    ui_mainMenu_screen_init();
     ui_Home_screen_init();
+    ui_settingsMenu_screen_init();
+    ui_exerciseMenu_screen_init();
     ui_Battery_screen_init();
     ui_Pulse_screen_init();
-    ui_mainMenu_screen_init();
     ui_Brightness_screen_init();
     ui_Time_screen_init();
     ui_Date_screen_init();
     ui_SensorTest_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_Home);
+    lv_disp_load_scr(ui_mainMenu);
 }

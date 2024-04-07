@@ -178,7 +178,7 @@ static int cst816d_process(const struct device *dev)
 static void cst816d_work_handler(struct k_work *work)
 {
 	struct cst816d_data *data = CONTAINER_OF(work, struct cst816d_data, work);
-
+	printk("gfdgdfgdfgdf\n");
 	cst816d_process(data->dev);
 }
 
