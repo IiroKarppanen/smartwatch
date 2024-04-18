@@ -128,9 +128,9 @@ static int cst816d_process(const struct device *dev)
 	event = (output.x & 0xff) >> CST816S_EVENT_BITS_POS;
 	is_pressed = (event == EVENT_CONTACT);
 
-	//printk("Event: %u\n", event);
-	//printk("Pressed: %u\n", is_pressed);
-	//printk("Gesture: %u\n", output.gesture);
+	printk("Event: %u\n", event);
+	printk("Pressed: %u\n", is_pressed);
+	printk("Gesture: %u\n", output.gesture);
 
 	if (is_pressed) {
 		// These events are generated for the LVGL touch implementation.
@@ -236,11 +236,14 @@ static int cst816d_chip_init(const struct device *dev)
 		return -ENODATA;
 	}
 
+	printk("Input init complete!\n");
+
 	return 0;
 }
 
 static int cst816d_init(const struct device *dev)
 {
+	printk("Starting input init\n");
 
 	struct cst816d_data *data = dev->data;
 
