@@ -1,0 +1,87 @@
+include <zephyr/kernel.h>
+#include <zephyr/kernel/thread_stack.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <zephyr/sys/printk.h>
+#include <SEGGER_RTT.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/input/input.h>
+#include <zephyr/drivers/pwm.h>
+#include <zephyr/drivers/uart.h>
+
+
+#define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(app);
+
+static uint8_t uart_buf[1024];
+
+struct gps_data {
+    char time[12];      // UTC time in HHMMSS.SSS format
+    char latitude[12];  // Latitude in DDMM.MMMM format
+    char longitude[13]; // Longitude in DDDMM.MMMM format
+    char status;        // Status of GPS fix (A = valid, V = invalid)
+};
+
+static struct gps_data gps_info;
+
+
+static void uart_cb(const struct device *x, void *user_data)
+{
+	uart_irq_update(x);
+	int data_length = 0;
+
+	if (uart_irq_rx_ready(x)) {
+		data_length = uart_fifo_read(x, uart_buf, sizeof(uart_buf));
+		uart_buf[data_length] = 0;
+	}
+
+	printk("%s", uart_buf);
+}
+
+
+void main(void){
+	
+
+	SEGGER_RTT_Init();
+	printk("RTT LOG\n\n");
+    k_sleep(K_SECONDS(3));
+
+	//const struct device *uart = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
+	//const struct device *uart = DEVICE_DT_GET_ANY(DT_NODE(gnss));
+
+	const struct device *uart;
+	uart = device_get_binding("UART_0");
+	
+    const struct uart_config uart_cfg = {
+        .baudrate = 9600,
+        .parity = UART_CFG_PARITY_NONE,
+        .stop_bits = UART_CFG_STOP_BITS_1,
+        .data_bits = UART_CFG_DATA_BITS_8,
+        .flow_ctrl = UART_CFG_FLOW_CTRL_NONE
+    };
+
+	int ret;
+    ret = uart_irq_callback_user_data_set(uart, uart_cb, NULL);
+	if(ret != 0){
+		printk("UART Callback configure failed with error code: %d", ret);
+	}
+
+	uart_irq_rx_enable(uart);
+	printk("UART loopback start!\n");
+
+
+	while (1) {
+	
+		
+		printk("-\n");
+		k_sleep(K_MSEC(1000));
+	}
+    
+}
+

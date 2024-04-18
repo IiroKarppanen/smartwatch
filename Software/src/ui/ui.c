@@ -45,10 +45,13 @@ lv_obj_t * ui_Image11;
 lv_obj_t * ui_Image12;
 
 
-// SCREEN: ui_exerciseMenu
-void ui_exerciseMenu_screen_init(void);
-void ui_event_exerciseMenu(lv_event_t * e);
-lv_obj_t * ui_exerciseMenu;
+// SCREEN: ui_GpsTest
+void ui_GpsTest_screen_init(void);
+void ui_event_GpsTest(lv_event_t * e);
+lv_obj_t * ui_GpsTest;
+lv_obj_t * ui_posLabel;
+lv_obj_t * ui_utcLabel;
+lv_obj_t * ui_statusLabel;
 
 
 // SCREEN: ui_Battery
@@ -163,7 +166,7 @@ void ui_event_settingsMenu(lv_event_t * e)
         _ui_screen_change(&ui_Home, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Home_screen_init);
     }
 }
-void ui_event_exerciseMenu(lv_event_t * e)
+void ui_event_GpsTest(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
@@ -254,7 +257,7 @@ void ui_init(void)
     ui_mainMenu_screen_init();
     ui_Home_screen_init();
     ui_settingsMenu_screen_init();
-    ui_exerciseMenu_screen_init();
+    ui_GpsTest_screen_init();
     ui_Battery_screen_init();
     ui_Pulse_screen_init();
     ui_Brightness_screen_init();
@@ -262,5 +265,5 @@ void ui_init(void)
     ui_Date_screen_init();
     ui_SensorTest_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_mainMenu);
+    lv_disp_load_scr(ui_GpsTest);
 }

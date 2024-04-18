@@ -44,10 +44,13 @@ extern lv_obj_t * ui_Image9;
 extern lv_obj_t * ui_Image10;
 extern lv_obj_t * ui_Image11;
 extern lv_obj_t * ui_Image12;
-// SCREEN: ui_exerciseMenu
-void ui_exerciseMenu_screen_init(void);
-void ui_event_exerciseMenu(lv_event_t * e);
-extern lv_obj_t * ui_exerciseMenu;
+// SCREEN: ui_GpsTest
+void ui_GpsTest_screen_init(void);
+void ui_event_GpsTest(lv_event_t * e);
+extern lv_obj_t * ui_GpsTest;
+extern lv_obj_t * ui_posLabel;
+extern lv_obj_t * ui_utcLabel;
+extern lv_obj_t * ui_statusLabel;
 // SCREEN: ui_Battery
 void ui_Battery_screen_init(void);
 void ui_event_Battery(lv_event_t * e);

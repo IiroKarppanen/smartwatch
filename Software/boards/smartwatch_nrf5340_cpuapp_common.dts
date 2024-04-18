@@ -62,22 +62,16 @@
 };
 
 &uart0{
-	status = "disabled";
-	current-speed = <115200>;
+	status = "okay";
+	current-speed = <9600>;
 	label = "UART_0";
 	
-	/* 
+	
 	gnss: gnss-nmea-generic {
 		compatible = "gnss-nmea-generic";
-		label = "L96";
 	};
-	*/
 	
-
 };
-
-
-
 
 &pwm0 {
 	status = "disabled";

@@ -1,7 +1,7 @@
 screens/ui_mainMenu.c
 screens/ui_Home.c
 screens/ui_settingsMenu.c
-screens/ui_exerciseMenu.c
+screens/ui_GpsTest.c
 screens/ui_Battery.c
 screens/ui_Pulse.c
 screens/ui_Brightness.c

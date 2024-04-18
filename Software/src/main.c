@@ -12,27 +12,20 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/input/input.h>
 #include <zephyr/drivers/pwm.h>
+#include <zephyr/drivers/uart.h>
 #include <lvgl.h>
 #include <ui.h>
-#include <nrfx_clock.h>
-
-#include "sensor_data/sensor_data.h"
-#include "clock/clock.h"
-
-
-
-
 
 
 #define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app);
 
+
+
+
 #define LVGL_THREAD_STACK_SIZE 15360
 #define LVGL_THREAD_PRIORITY 1
-
-#define RTC_THREAD_STACK_SIZE 15360
-#define RTC_THREAD_PRIORITY 1
 
 // LVGL thread
 K_THREAD_STACK_DEFINE(lvgl_thread_stack, LVGL_THREAD_STACK_SIZE);
@@ -48,36 +41,117 @@ void lvgl_task(void *p1, void *p2, void *p3)
 }
 
 
-static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(DT_ALIAS(pwm_led0));
 
-#define MIN_PERIOD PWM_SEC(1U) / 128U
-float brightness;
+#define UART_BUF_SIZE 1024
 
-#define PWM_THREAD_STACK_SIZE 8192
-#define PWM_THREAD_PRIORITY 4
+static uint8_t uart_buf[UART_BUF_SIZE];
 
-// PWM Thread
-K_THREAD_STACK_DEFINE(pwm_thread_stack, PWM_THREAD_STACK_SIZE);
-struct k_thread pwm_thread_data;
+static size_t buf_idx = 0;
 
-// PWM Task
-void pwm_task(void *p1, void *p2, void *p3)
-{
-    while (1) {
-        
-        int ret;
-		int sliderValue = lv_slider_get_value(ui_Slider1);
 
-        
-		brightness = (float)sliderValue / 1000.0;
+struct gps_data {
+    char time[12];      // UTC time in HHMMSS.SSS format
+    char latitude[12];  // Latitude in DDMM.MMMM format
+    char longitude[13]; // Longitude in DDDMM.MMMM format
+    char status;        // Status of GPS fix (A = valid, V = invalid)
+};
 
-		ret = pwm_set_dt(&pwm_led0, MIN_PERIOD * brightness, MIN_PERIOD);
-		if (ret) {
-			printk("Error %d: failed to set pulse width\n", ret);
-			return 0;
+
+
+static struct gps_data gps_info;
+
+
+static void parse_nmea(const char *sentence) {
+    printk("Received NMEA sentence: %s\n", sentence);
+
+	// $GPGLL,,,,,174518.086,V,N*7A
+
+	//printk("len: %d", strlen(sentence));
+
+	//  ,,,,174518.086,V,
+
+	int prefix;
+	int suffix;
+
+	size_t len = strlen(sentence);
+
+	if (strstr(sentence, "GPGLL") != NULL) {
+		
+		prefix = 7;
+		suffix = 17;
+
+		// Calculate the start and length of the substring to extract
+		char* start_ptr = sentence + prefix; // Pointer to the start of the substring
+		size_t substring_len = len - prefix - suffix; // Length of the substring
+
+		// Allocate memory for the substring (including space for the null terminator)
+		char pos[substring_len + 1];
+
+		// Copy the substring from the original sentence
+		memcpy(pos, start_ptr, substring_len);
+		pos[substring_len] = '\0'; // Null terminate the pos substring
+
+		// Print the pos substring
+		printk("Position: %s\n", pos);
+
+		if(strcmp(pos, ",,,,\n") == 0){
+			lv_label_set_text(ui_posLabel, pos);
+		}
+		else{
+			lv_label_set_text(ui_posLabel, "No Fix");
 		}
 
-		k_sleep(K_SECONDS(4U));
+		prefix = 11;
+		suffix = 11;
+
+		// Calculate the start and length of the substring to extract
+		start_ptr = sentence + prefix; // Pointer to the start of the substring
+		substring_len = len - prefix - suffix; // Length of the substring
+
+		// Allocate memory for the substring (including space for the null terminator)
+		char time[substring_len + 1];
+
+		// Copy the substring from the original sentence
+		memcpy(time, start_ptr, substring_len);
+		time[substring_len] = '\0'; // Null terminate the time substring
+
+		// Create a new string to hold the formatted time (including null terminator)
+		char formatted_time[9]; // "HH:MM:SS\0"
+
+		// Insert colons at specific positions to format the time string
+		sprintf(formatted_time, "%c%c:%c%c:%c%c", 
+				time[0], time[1], // Hours
+				time[2], time[3], // Minutes
+				time[4], time[5]); // Seconds
+
+		// Print the formatted time string
+		printk("Formatted Time: %s\n", formatted_time);
+		lv_label_set_text(ui_utcLabel, formatted_time);
+
+
+		lv_label_set_text(ui_statusLabel, sentence);
+
+	}
+}
+
+
+static void uart_cb(const struct device *x, void *user_data) {
+    uart_irq_update(x);
+    int data_length = 0;
+
+    if (uart_irq_rx_ready(x)) {
+        data_length = uart_fifo_read(x, &uart_buf[buf_idx], UART_BUF_SIZE - buf_idx);
+        buf_idx += data_length;
+
+        // Search for end of line characters and process sentences
+        for (size_t i = 0; i < buf_idx; i++) {
+            if (uart_buf[i] == '\n' || uart_buf[i] == '\r') {
+                uart_buf[i] = 0; // Null-terminate the sentence
+                parse_nmea((char *)uart_buf);
+                buf_idx = 0; // Reset buffer index after processing
+                break;
+            }
+        }
     }
 }
 
@@ -91,13 +165,6 @@ void main(void){
     k_sleep(K_SECONDS(3));
 
 
-	// NRF_CLOCK_HFCLK_DIV_1 - 128Mhz
-	// NRF_CLOCK_HFCLK_DIV_2 - 64Mhz
-	// NRF_CLOCK_HFCLK_DIV_4 - 32Mhz
-	nrfx_clock_divider_set(NRF_CLOCK_DOMAIN_HFCLK, NRF_CLOCK_HFCLK_DIV_1);
-
-
-
 
 	const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
 
@@ -107,71 +174,45 @@ void main(void){
 		return;
 	}
 
-	if (!pwm_is_ready_dt(&pwm_led0)) {
-		printk("Error: PWM device %s is not ready\n",
-		       pwm_led0.dev->name);
-		return 0;
-	}
-
-
 	// Initialize LVGL
     lv_init();
 	ui_init();
 
-
-	
-
-
-
-	/*
-    k_thread_create(&pwm_thread_data, pwm_thread_stack,
-        K_THREAD_STACK_SIZEOF(pwm_thread_stack),
-        pwm_task, NULL, NULL, NULL,
-        PWM_THREAD_PRIORITY, 0, K_NO_WAIT);
-    
-	*/
     k_thread_create(&lvgl_thread_data, lvgl_thread_stack,
         K_THREAD_STACK_SIZEOF(lvgl_thread_stack),
         lvgl_task, NULL, NULL, NULL,
         LVGL_THREAD_PRIORITY, 0, K_NO_WAIT);
+
+
+
+
+	const struct device *uart;
+	uart = device_get_binding("UART_0");
 	
+    const struct uart_config uart_cfg = {
+        .baudrate = 9600,
+        .parity = UART_CFG_PARITY_NONE,
+        .stop_bits = UART_CFG_STOP_BITS_1,
+        .data_bits = UART_CFG_DATA_BITS_8,
+        .flow_ctrl = UART_CFG_FLOW_CTRL_NONE
+    };
+
+	int ret;
+    ret = uart_irq_callback_user_data_set(uart, uart_cb, NULL);
+	if(ret != 0){
+		printk("UART Callback configure failed with error code: %d", ret);
+	}
+
+	uart_irq_rx_enable(uart);
+	printk("UART loopback start!\n");
 
 
 	while (1) {
 	
-		char time_str[20]; 
-		snprintf(time_str, sizeof(time_str), "%02u:%02u", CurrentTime.tm_hour, CurrentTime.tm_min);
-		lv_label_set_text(ui_TimeLabel, time_str);
-		char date_str[20]; 
-		snprintf(date_str, sizeof(date_str), "%u,March", CurrentTime.tm_mday);
-		lv_label_set_text(ui_DateLabel, date_str);
-
-		char AX_str[20];
-		snprintf(AX_str, sizeof(AX_str), "X: %d.%06d", acc[0].val1, acc[0].val2);
-		lv_label_set_text(ui_AXLabel, AX_str);
-
-		char AY_str[20];
-		snprintf(AY_str, sizeof(AY_str), "Y: %d.%06d", acc[1].val1, acc[1].val2);
-		lv_label_set_text(ui_AYLabel, AY_str);
-
-		char AZ_str[20];
-		snprintf(AZ_str, sizeof(AZ_str), "Z: %d.%06d", acc[2].val1, acc[2].val2);
-		lv_label_set_text(ui_AZLabel, AZ_str);
-
-		char GX_str[20];
-		snprintf(GX_str, sizeof(GX_str), "X: %d.%06d", gyr[0].val1, gyr[0].val2);
-		lv_label_set_text(ui_GXLabel, GX_str);
-
-		char GY_str[20];
-		snprintf(GY_str, sizeof(GY_str), "Y: %d.%06d", gyr[1].val1, gyr[1].val2);
-		lv_label_set_text(ui_GYLabel, GY_str);
-
-		char GZ_str[20];
-		snprintf(GZ_str, sizeof(GZ_str), "Z: %d.%06d", gyr[2].val1, gyr[2].val2);
-		lv_label_set_text(ui_GZLabel, GZ_str);
-
-		k_sleep(K_MSEC(100));
-	
-    }
+		
+		printk("-\n");
+		k_sleep(K_MSEC(1000));
+	}
+    
 }
 
