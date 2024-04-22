@@ -1,0 +1,147 @@
+#include "ui.h"
+#include "../clock/clock.h"
+
+LV_FONT_DECLARE(roboto_18);
+LV_FONT_DECLARE(roboto_22);
+LV_FONT_DECLARE(roboto_68);
+
+#define MASK_WIDTH 240
+#define MASK_HEIGHT 240
+
+char timeStr[6]; 
+char dateStr[20]; 
+static uint16_t hue = 0; 
+
+lv_obj_t * canvas;
+lv_obj_t * grad;
+
+lv_draw_label_dsc_t label_time;
+lv_draw_label_dsc_t label_date;
+lv_draw_label_dsc_t label_dsc2;
+lv_draw_label_dsc_t label_dsc3;
+
+
+static lv_color_t mask_map[MASK_WIDTH * MASK_HEIGHT];
+
+
+static void add_mask_event_cb(lv_event_t * e)
+{
+    static lv_draw_mask_map_param_t m;
+    static int16_t mask_id;
+
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target(e);
+    lv_opa_t * mask_map = lv_event_get_user_data(e);
+    if(code == LV_EVENT_COVER_CHECK) {
+        lv_event_set_cover_res(e, LV_COVER_RES_MASKED);
+    }
+    else if(code == LV_EVENT_DRAW_MAIN_BEGIN) {
+        lv_draw_mask_map_init(&m, &obj->coords, mask_map);
+        mask_id = lv_draw_mask_add(&m, NULL);
+
+    }
+    else if(code == LV_EVENT_DRAW_MAIN_END) {
+        lv_draw_mask_free_param(&m);
+        lv_draw_mask_remove_id(mask_id);
+    }
+}
+
+static void update_gradient() {
+  
+    lv_color_t new_color = lv_color_hsv_to_rgb(hue, 80, 80);
+    lv_obj_set_style_bg_grad_color(grad, new_color, 0);
+
+    hue += 1; 
+    if (hue == 359) {
+        hue = 0; 
+    }
+}
+
+static void update_canvas() {
+
+    // Clear mask map
+    memset(mask_map, 0, sizeof(mask_map));  
+
+    // Update labels
+    strftime(timeStr, sizeof(timeStr), "%H:%M", &CurrentTime);
+    lv_canvas_draw_text(canvas, 0, 90, MASK_WIDTH, &label_time, timeStr);
+    lv_canvas_draw_text(canvas, -17, 45, MASK_WIDTH, &label_dsc2, LV_SYMBOL_CHARGE);
+    lv_canvas_draw_text(canvas, 17, 45, MASK_WIDTH, &label_dsc3, "87%");
+    strftime(dateStr, sizeof(dateStr), "%d %B", &CurrentTime);
+    lv_canvas_draw_text(canvas, 0, 160, MASK_WIDTH, &label_date, dateStr);
+
+    // Update mask map
+    uint32_t i;
+    uint8_t * mask8 = (uint8_t *) mask_map;
+    lv_color_t * mask_c = mask_map;
+    for(i = 0; i < MASK_WIDTH * MASK_HEIGHT; i++) {
+        mask8[i] = lv_color_brightness(mask_c[i]);
+    }
+
+}
+
+
+
+void ui_Home_screen_init(void)
+{
+    ui_Home = lv_obj_create(NULL);
+    lv_obj_clear_flag(ui_Home, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_Home, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Home, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_add_event_cb(ui_Home, ui_event_Home, LV_EVENT_ALL, NULL);
+
+    // ##################################################################################
+
+    canvas = lv_canvas_create(ui_Home);
+    lv_canvas_set_buffer(canvas, mask_map, MASK_WIDTH, MASK_HEIGHT, LV_IMG_CF_RESERVED_16);
+ 
+    lv_draw_label_dsc_init(&label_time);
+    label_time.color = lv_color_white();
+    label_time.align = LV_TEXT_ALIGN_CENTER;
+    label_time.font = &roboto_68;
+
+    lv_draw_label_dsc_init(&label_dsc2);
+    label_dsc2.color = lv_color_white();
+    label_dsc2.align = LV_TEXT_ALIGN_CENTER;
+    label_dsc2.font = &lv_font_montserrat_18;
+
+    lv_draw_label_dsc_init(&label_dsc3);
+    label_dsc3.color = lv_color_white();
+    label_dsc3.align = LV_TEXT_ALIGN_CENTER;
+    label_dsc3.font = &roboto_18;
+    label_dsc3.letter_space = 1;
+  
+    lv_draw_label_dsc_init(&label_date);
+    label_date.color = lv_color_white();
+    label_date.align = LV_TEXT_ALIGN_CENTER;
+    label_date.font = &roboto_22;
+    label_date.letter_space = 2;
+
+    // Populate mask map
+    uint32_t i;
+    uint8_t * mask8 = (uint8_t *) mask_map;
+    lv_color_t * mask_c = mask_map;
+    for(i = 0; i < MASK_WIDTH * MASK_HEIGHT; i++) {
+        mask8[i] = lv_color_brightness(mask_c[i]);
+    }
+
+    // Add gradient
+    grad = lv_obj_create(ui_Home);
+    lv_obj_set_size(grad, MASK_WIDTH, MASK_HEIGHT);
+    lv_obj_center(grad);
+    lv_obj_set_style_bg_color(grad, lv_color_make(255, 255, 255), 0);
+    lv_obj_set_style_bg_grad_color(grad, lv_color_make(91, 150, 245), 0);
+    lv_obj_set_style_bg_grad_dir(grad, LV_GRAD_DIR_HOR, 0);
+    lv_obj_add_event_cb(grad, add_mask_event_cb, LV_EVENT_ALL, mask_map);
+    lv_obj_set_style_border_opa(grad, 0, NULL);
+
+    // Start tasks
+    lv_timer_create(update_canvas, 1000, NULL); 
+    lv_timer_create(update_gradient, 100, NULL); 
+    
+}
+
+
+
+

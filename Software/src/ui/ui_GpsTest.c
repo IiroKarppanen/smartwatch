@@ -35,7 +35,7 @@ void ui_GpsTest_screen_init(void)
     lv_obj_set_y(ui_statusLabel, -60);
     lv_obj_set_align(ui_statusLabel, LV_ALIGN_CENTER);
     lv_label_set_text(ui_statusLabel, "V");
-    lv_obj_set_style_text_font(ui_statusLabel, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_statusLabel, &lv_font_montserrat_28, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_GpsTest, ui_event_GpsTest, LV_EVENT_ALL, NULL);
 

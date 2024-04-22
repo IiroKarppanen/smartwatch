@@ -10,6 +10,9 @@ void ui_Pulse_screen_init(void)
     ui_Pulse = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Pulse, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    lv_obj_set_style_bg_color(ui_Pulse, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Pulse, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     ui_Image1 = lv_img_create(ui_Pulse);
     lv_img_set_src(ui_Image1, &ui_img_1111712444);
     lv_obj_set_width(ui_Image1, 46);

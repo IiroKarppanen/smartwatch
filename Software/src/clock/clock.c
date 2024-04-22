@@ -6,17 +6,18 @@
 #include <zephyr/init.h>
 #include "drivers/RV3028/RV3028.h"
 #include "clock.h"
+#include "ui.h"
 
 
 struct tm CurrentTime = 
 {
     .tm_sec = 0,
     .tm_min = 27,
-    .tm_hour = 15,
-    .tm_wday = 4,
-    .tm_mday = 26,
-    .tm_mon = 11,
-    .tm_year = 20,
+    .tm_hour = 9,
+    .tm_wday = 7,
+    .tm_mday = 21,
+    .tm_mon = 3,
+    .tm_year = 24,
 };
 
 #define PASSWORD    0x20
@@ -29,7 +30,6 @@ struct k_thread clock_thread_data;
 void clock_task()
 {
     while (1) {
-        
         RV3028_GetTime(&RTC, &CurrentTime);
         k_msleep(1000);  
     }
@@ -159,6 +159,7 @@ void start_clock(void){
             RV3028_UnlockWP(&RTC, PASSWORD);
             RV3028_EnableClkOut(&RTC, false, false);
 
+            //RV3028_SetTime(&RTC, &CurrentTime);
             RV3028_GetTime(&RTC, &CurrentTime);
             printk("  Current time: %u:%u:%u\n", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
             k_sleep(K_MSEC(1000));

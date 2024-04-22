@@ -25,6 +25,8 @@ src/drivers/gc9a01/gc9a01.c
 src/drivers/input/cst816d/input_cst816d.c
 src/drivers/RV3028/RV3028.c
 
+src/drivers/gnss/gnss.c
+
 
 src/clock/clock.c
 src/sensor_data/sensor_data.c

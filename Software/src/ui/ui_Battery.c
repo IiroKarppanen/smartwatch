@@ -24,6 +24,9 @@ void ui_Battery_screen_init(void)
     ui_Battery = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Battery, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    lv_obj_set_style_bg_color(ui_Battery, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Battery, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     ui_Arc3 = lv_arc_create(ui_Battery);
     lv_obj_set_width(ui_Arc3, 242);
     lv_obj_set_height(ui_Arc3, 242);

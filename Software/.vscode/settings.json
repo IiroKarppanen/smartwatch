@@ -41,7 +41,8 @@
         "icons.h": "c",
         "rtc.h": "c",
         "sensor_data.h": "c",
-        "ui.h": "c"
+        "ui.h": "c",
+        "numbers": "c"
     },
     "files.watcherExclude": {
         "**/target": true

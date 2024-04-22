@@ -11,6 +11,9 @@ void ui_SensorTest_screen_init(void)
     ui_SensorTest = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_SensorTest, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    lv_obj_set_style_bg_color(ui_SensorTest, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_SensorTest, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     ui_Label12 = lv_label_create(ui_SensorTest);
     lv_obj_set_width(ui_Label12, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label12, LV_SIZE_CONTENT);    /// 1

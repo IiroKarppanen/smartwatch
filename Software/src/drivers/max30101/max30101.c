@@ -10,8 +10,9 @@
 #include <zephyr/drivers/gpio.h>
 
 
-#define LED0_NODE DT_ALIAS(led0)
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+#define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
+
+const struct gpio_dt_spec hr_en = GPIO_DT_SPEC_GET(ZEPHYR_USER_NODE, hr_gpios);
 
 const struct device *hr_sensor;
 
@@ -35,17 +36,8 @@ void init_max30101(){
 		return 0;
 	}
 
-    int ret;
-
-	if (!gpio_is_ready_dt(&led)) {
-		return 0;
-	}
-
-	ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-	if (ret < 0) {
-		return 0;
-	}
-	gpio_pin_set(led.port, led.pin, 1);
+    gpio_pin_configure_dt(&hr_en, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_set_dt(&hr_en, 1);
 }
 
 void fetch_pulse(){
@@ -117,8 +109,6 @@ void fetch_pulse(){
 
     	}
 
-		//gpio_pin_set(led.port, led.pin, 0);
-		//gpio_pin_toggle(led.port, led.pin);
         k_msleep(20);  
     }
 
@@ -130,4 +120,4 @@ static const struct sensor_driver_api max30101_driver_api = {
 };
 
 
-SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);
+//SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);

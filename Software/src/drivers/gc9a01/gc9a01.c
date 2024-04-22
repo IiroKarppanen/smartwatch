@@ -375,7 +375,7 @@ static int gc9a01_controller_init(const struct device *dev)
         i++;
     }
 
-    //gpio_pin_set_dt(&config->bl_gpio, 0);
+    gpio_pin_set_dt(&config->bl_gpio, 1);
     //gc9a01a_set_orientation(dev, DISPLAY_ORIENTATION_ROTATED_180);
 
     

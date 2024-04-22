@@ -2,25 +2,17 @@
 //#include "icons/icons.h" add to (ui.h)
 
 
-extern lv_font_t roboto_48; 
-extern lv_font_t orbitron_24;
+//extern lv_font_t roboto_48; 
+//extern lv_font_t orbitron_24;
 
 
 
-extern lv_font_t icons_36; // 0xf004, 
-extern lv_font_t icons_16; // 0xf54b
-extern lv_font_t icons_26; // 0xf70c, 0xf294, 0xf293, 0xf241, 0xf017, 0xf06e
 
-#define HEART_ICON_36 "\xEF\x80\x84"
 
-#define STEPS_ICON_16 "\xEF\x95\x8B"
+extern lv_font_t home_icons_14;
 
-#define RUNNING_ICON_26 "\xEF\x9C\x8C"
-#define BLUETOOTH_ICON_26 "\xEF\x8A\x94"
-#define BLUETOOTH_FILLED_ICON_26 "\xEF\x8A\x93"
-#define BATTERY_ICON_26 "\xEF\x89\x81"
-#define CLOCK_ICON_26 "\xEF\x80\x97"
-#define EYE_ICON_26 "\xEF\x81\xAE"
+#define STEPS_ICON_14 "\xEF\x95\x8B"
+#define LIGHTNING_ICON_14 "\xEF\x83\xA7"
 
 
 LV_IMG_DECLARE(ui_img_battery_half_png);

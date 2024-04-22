@@ -9,12 +9,16 @@ void ui_Date_screen_init(void)
 {
     ui_Date = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Date, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_Date, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Date, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Roller4 = lv_roller_create(ui_Date);
     lv_roller_set_options(ui_Roller4, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12", LV_ROLLER_MODE_INFINITE);
     lv_roller_set_selected(ui_Roller4, 38, LV_ANIM_OFF);
     lv_obj_set_height(ui_Roller4, 87);
     lv_obj_set_width(ui_Roller4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_x(ui_Roller4, -5);
+    lv_obj_set_y(ui_Roller4, 25);
     lv_obj_set_align(ui_Roller4, LV_ALIGN_CENTER);
     lv_obj_set_style_border_width(ui_Roller4, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -27,8 +31,8 @@ void ui_Date_screen_init(void)
     lv_roller_set_selected(ui_Roller5, 2024, LV_ANIM_OFF);
     lv_obj_set_height(ui_Roller5, 90);
     lv_obj_set_width(ui_Roller5, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_x(ui_Roller5, 65);
-    lv_obj_set_y(ui_Roller5, 0);
+    lv_obj_set_x(ui_Roller5, 64);
+    lv_obj_set_y(ui_Roller5, 27);
     lv_obj_set_align(ui_Roller5, LV_ALIGN_CENTER);
     lv_obj_set_style_border_width(ui_Roller5, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -38,8 +42,8 @@ void ui_Date_screen_init(void)
     ui_Label9 = lv_label_create(ui_Date);
     lv_obj_set_width(ui_Label9, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label9, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label9, -33);
-    lv_obj_set_y(ui_Label9, 0);
+    lv_obj_set_x(ui_Label9, -38);
+    lv_obj_set_y(ui_Label9, -16);
     lv_obj_set_align(ui_Label9, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label9, ".");
     lv_obj_set_style_text_font(ui_Label9, &lv_font_montserrat_36, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -51,8 +55,8 @@ void ui_Date_screen_init(void)
     lv_roller_set_selected(ui_Roller6, 38, LV_ANIM_OFF);
     lv_obj_set_height(ui_Roller6, 87);
     lv_obj_set_width(ui_Roller6, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_x(ui_Roller6, -65);
-    lv_obj_set_y(ui_Roller6, 0);
+    lv_obj_set_x(ui_Roller6, -76);
+    lv_obj_set_y(ui_Roller6, 29);
     lv_obj_set_align(ui_Roller6, LV_ALIGN_CENTER);
     lv_obj_set_style_border_width(ui_Roller6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -62,28 +66,39 @@ void ui_Date_screen_init(void)
     ui_Label10 = lv_label_create(ui_Date);
     lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label10, 28);
-    lv_obj_set_y(ui_Label10, 0);
+    lv_obj_set_x(ui_Label10, 25);
+    lv_obj_set_y(ui_Label10, -13);
     lv_obj_set_align(ui_Label10, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label10, ".");
     lv_obj_set_style_text_font(ui_Label10, &lv_font_montserrat_36, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Label11 = lv_label_create(ui_Date);
-    lv_obj_set_width(ui_Label11, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label11, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label11, 0);
-    lv_obj_set_y(ui_Label11, -75);
-    lv_obj_set_align(ui_Label11, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label11, "19.3.2024");
-    lv_obj_set_style_text_font(ui_Label11, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_Label11, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_Label11, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_Label11, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_side(ui_Label11, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Label11, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Label11, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Label11, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Label11, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_Slider2 = lv_slider_create(ui_Date);
+    lv_obj_set_width(ui_Slider2, 150);
+    lv_obj_set_height(ui_Slider2, 10);
+    lv_obj_set_x(ui_Slider2, 3);
+    lv_obj_set_y(ui_Slider2, -71);
+    lv_obj_set_align(ui_Slider2, LV_ALIGN_CENTER);
+    lv_obj_set_style_bg_color(ui_Slider2, lv_color_hex(0x424242), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Slider2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(ui_Slider2, lv_color_hex(0x9A70FF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Slider2, 255, LV_PART_KNOB | LV_STATE_DEFAULT);
+
+    ui_Label2 = lv_label_create(ui_Date);
+    lv_obj_set_width(ui_Label2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label2, 2);
+    lv_obj_set_y(ui_Label2, -100);
+    lv_obj_set_align(ui_Label2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label2, "Time Zone");
+
+    ui_Label8 = lv_label_create(ui_Date);
+    lv_obj_set_width(ui_Label8, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label8, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label8, 3);
+    lv_obj_set_y(ui_Label8, -42);
+    lv_obj_set_align(ui_Label8, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label8, "UTC +3");
 
     lv_obj_add_event_cb(ui_Date, ui_event_Date, LV_EVENT_ALL, NULL);
 
