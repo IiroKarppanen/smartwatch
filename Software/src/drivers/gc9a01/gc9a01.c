@@ -165,7 +165,6 @@ static const uint8_t initcmd[] = {
 struct gc9a01_config {
     struct spi_dt_spec bus;
     struct gpio_dt_spec dc_gpio;
-    struct gpio_dt_spec bl_gpio;
     struct gpio_dt_spec reset_gpio;
 };
 
@@ -282,22 +281,6 @@ static void *gc9a01_get_framebuffer(const struct device *dev)
     return NULL;
 }
 
-void gc9a01_set_brightness(const struct device *dev,
-                                 const uint8_t brightness)
-{
-    if(brightness == 0){
-        const struct gc9a01_config *config = dev->config;
-    gpio_pin_set_dt(&config->bl_gpio, 0);
-    }
-    if(brightness == 100){
-        const struct gc9a01_config *config = dev->config;
-    gpio_pin_set_dt(&config->bl_gpio, 1);
-    }
-
-    const struct gc9a01_config *config = dev->config;
-    gpio_pin_set_dt(&config->bl_gpio, 0);
-    
-}
 
 static int gc9a01_set_contrast(const struct device *dev, uint8_t contrast)
 {
@@ -375,9 +358,6 @@ static int gc9a01_controller_init(const struct device *dev)
         i++;
     }
 
-    gpio_pin_set_dt(&config->bl_gpio, 1);
-    //gc9a01a_set_orientation(dev, DISPLAY_ORIENTATION_ROTATED_180);
-
     
     return 0;
 }
@@ -404,14 +384,7 @@ static int gc9a01_init(const struct device *dev)
     }
     gpio_pin_configure_dt(&config->reset_gpio, GPIO_OUTPUT_ACTIVE);
     gpio_pin_configure_dt(&config->dc_gpio, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&config->bl_gpio, GPIO_OUTPUT_INACTIVE);
     k_msleep(500);
-
-    if (!device_is_ready(config->bl_gpio.port)) {
-        LOG_ERR("Busy GPIO device not ready");
-        return -ENODEV;
-    }
-
 
     return gc9a01_controller_init(dev);
 }
@@ -420,7 +393,6 @@ static const struct gc9a01_config gc9a01_config = {
     .bus = SPI_DT_SPEC_INST_GET(0, SPI_OP_MODE_MASTER | SPI_WORD_SET(8), 0),
     .reset_gpio = GPIO_DT_SPEC_INST_GET(0, reset_gpios),
     .dc_gpio = GPIO_DT_SPEC_INST_GET(0, dc_gpios),
-    .bl_gpio = GPIO_DT_SPEC_INST_GET(0, bl_gpios),
 };
 
 static struct display_driver_api gc9a01_driver_api = {
@@ -429,7 +401,6 @@ static struct display_driver_api gc9a01_driver_api = {
     .write = gc9a01_write,
     .read = gc9a01_read,
     .get_framebuffer = gc9a01_get_framebuffer,
-    .set_brightness = gc9a01_set_brightness,
     .set_contrast = gc9a01_set_contrast,
     .get_capabilities = gc9a01_get_capabilities,
     .set_pixel_format = gc9a01_set_pixel_format,

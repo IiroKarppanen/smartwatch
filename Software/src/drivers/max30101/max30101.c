@@ -36,8 +36,10 @@ void init_max30101(){
 		return 0;
 	}
 
-    gpio_pin_configure_dt(&hr_en, GPIO_OUTPUT_ACTIVE);
+    gpio_pin_configure_dt(&hr_en, GPIO_OUTPUT_HIGH);
 	gpio_pin_set_dt(&hr_en, 1);
+
+	fetch_pulse();
 }
 
 void fetch_pulse(){
@@ -70,7 +72,6 @@ void fetch_pulse(){
 
     while (1) {
 
-		//gpio_pin_set(led.port, led.pin, 1);
 
         sensor_sample_fetch(hr_sensor);
 	    sensor_channel_get(hr_sensor, SENSOR_CHAN_GREEN, &ir);
@@ -120,4 +121,4 @@ static const struct sensor_driver_api max30101_driver_api = {
 };
 
 
-//SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);
+//SYS_INIT(init_max30101, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);

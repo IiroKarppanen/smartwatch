@@ -23,13 +23,6 @@ properties:
         If connected directly the MCU pin should be configured
         as active low.
 
-    bl-gpios:
-      type: phandle-array
-      required: true
-      description: BL pin.
-
-        Pin for backlight PWM control.
-
     dc-gpios:
       type: phandle-array
       required: true

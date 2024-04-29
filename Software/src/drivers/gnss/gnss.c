@@ -6,6 +6,11 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/gpio.h>
+#include <lvgl.h>
+#include <ui.h>
+
+const struct device *uart;
+
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
 
@@ -46,8 +51,14 @@ static void parse_nmea(const char *sentence) {
 
 	size_t len = strlen(sentence);
 
-    /*
-	if (strstr(sentence, "GPGLL") != NULL) {
+    
+	if (strstr(sentence, "GPGGA") != NULL) {
+
+
+		//lv_label_set_text(ui_posLabel, sentence);
+
+		/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+		
 		
 		prefix = 7;
 		suffix = 17;
@@ -91,8 +102,10 @@ static void parse_nmea(const char *sentence) {
 
 		// Print the formatted time string
 		printk("Formatted Time: %s\n", formatted_time);
+
+		*/
 	}
-    */
+    
 }
 
 
@@ -121,7 +134,6 @@ static void uart_cb(const struct device *x, void *user_data) {
 
 void init_gnss(){
 
-    const struct device *uart;
 	uart = device_get_binding("UART_0");
 	
     const struct uart_config uart_cfg = {
@@ -138,17 +150,30 @@ void init_gnss(){
 		printk("UART Callback configure failed with error code: %d", ret);
 	}
 
+	k_msleep(5000); 
 	uart_irq_rx_enable(uart);
 
-    gpio_pin_configure_dt(&extint, GPIO_OUTPUT_HIGH);
-    k_sleep(K_MSEC(500));
-    gpio_pin_set_dt(&extint, 0);
+    gpio_pin_configure_dt(&extint, GPIO_OUTPUT_LOW);
+	//gpio_pin_configure_dt(&forceon, GPIO_OUTPUT_HIGH);
+	
+	enter_standby_mode();
+	//exit_standby_mode();
+
+}
+
+const char *standby_command = "$PMTK161,0*28";
+
+
+void send_uart_command(const struct device *uart, const char *cmd) {
+    size_t cmd_len = strlen(cmd);
+    uart_tx(uart, (const uint8_t *)cmd, cmd_len, SYS_FOREVER_MS);
 }
 
 
 void enter_standby_mode(){
     // or send “$PMTK161,0*28” via uart
-    gpio_pin_set_dt(&extint, 0);
+    //gpio_pin_set_dt(&extint, 0);
+	send_uart_command(uart, standby_command);
 }
 
 void exit_standby_mode(){
@@ -163,4 +188,4 @@ void exit_backup_mode(){
 }
 
 
-//SYS_INIT(init_gnss, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);
+SYS_INIT(init_gnss, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);

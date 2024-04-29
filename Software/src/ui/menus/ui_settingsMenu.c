@@ -5,6 +5,8 @@
 
 #include "ui.h"
 
+LV_FONT_DECLARE(roboto_18);
+
 
 void list_item_click_event(lv_obj_t * obj, lv_event_t event) {
     
@@ -19,44 +21,43 @@ void ui_settingsMenu_screen_init(void)
     lv_obj_set_style_bg_opa(ui_settingsMenu, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(ui_settingsMenu, ui_event_settingsMenu, LV_EVENT_ALL, NULL);
 
+    // List Main container
+    lv_obj_t *list_container = lv_obj_create(ui_settingsMenu);
+    lv_obj_set_size(list_container, 225, 240);
+    lv_obj_align(list_container, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_set_style_bg_opa(list_container, 0, NULL);
+    lv_obj_set_style_border_opa(list_container, 0, NULL);
+    lv_obj_set_scroll_dir(list_container, LV_DIR_VER);
+    lv_obj_set_layout(list_container, LV_LAYOUT_FLEX);
+    lv_obj_set_flex_flow(list_container, LV_FLEX_FLOW_ROW_WRAP);
+    //lv_obj_set_flex_align(list_container, LV_FLEX_FLOW_ROW_WRAP, cross_place, LV_FLEX_ALIGN_START);
 
-    //lv_obj_t *cont = lv_obj_create(ui_settingsMenu );
-    //lv_obj_set_size(cont, 210, 240); 
+    /*  ------- Child containers  -------- */
 
-    lv_obj_t *list = lv_list_create(ui_settingsMenu);
-    lv_obj_set_size(list, 210, 240); 
-    lv_obj_align(list, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_t *bluetooth_container = lv_obj_create(list_container);
+    lv_obj_set_size(bluetooth_container, 225, 60);
+    lv_obj_set_style_bg_opa(bluetooth_container, 0, NULL);
+    lv_obj_set_style_border_opa(bluetooth_container, 0, NULL);
+    lv_obj_align(bluetooth_container, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+    lv_obj_clear_flag(bluetooth_container, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_grid_cell(bluetooth_container, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 1, 1);
 
-
-
-    // Bluetooth Button -----------------------------------------------------------------------------------------------------
-
-    lv_obj_t *bluetooth_btn = lv_list_add_btn(list, NULL, NULL);
-    lv_obj_align(bluetooth_btn, LV_ALIGN_LEFT_MID, 0, 0);
-    lv_obj_set_width(bluetooth_btn, 210);
-    lv_obj_set_height(bluetooth_btn, 75);
-
-    lv_obj_t *bluetooth_container = lv_obj_create(bluetooth_btn);
-    lv_obj_align(bluetooth_container, LV_ALIGN_LEFT_MID, 0, 0);
-    lv_obj_set_width(bluetooth_container, 210);
-    lv_obj_set_height(bluetooth_container, 75);
-    
     lv_obj_t *bluetooth_label = lv_label_create(bluetooth_container);
     lv_label_set_text(bluetooth_label, "Bluetooth");
-    lv_obj_set_style_text_font(bluetooth_label, &lv_font_montserrat_20, NULL);
-    lv_obj_align(bluetooth_label, LV_ALIGN_RIGHT_MID, 0, 0);
+    lv_obj_set_style_text_font(bluetooth_label, &roboto_18, NULL);
+    lv_obj_align(bluetooth_label, LV_ALIGN_LEFT_MID, 60, 0);
 
     lv_obj_t * bluetooth_icon_container = lv_obj_create(bluetooth_container);
-    lv_obj_set_width(bluetooth_icon_container, 50);
-    lv_obj_set_height(bluetooth_icon_container, 50);
+    lv_obj_set_width(bluetooth_icon_container, 45);
+    lv_obj_set_height(bluetooth_icon_container, 45);
     lv_obj_set_align(bluetooth_icon_container, LV_ALIGN_LEFT_MID);
 
-    lv_obj_set_style_border_color(bluetooth_icon_container, lv_color_hex(0xFF40FA), NULL);
+    lv_obj_set_style_border_color(bluetooth_icon_container, lv_color_hex(0x628EFF), NULL);
     lv_obj_set_style_border_width(bluetooth_icon_container, 3, NULL);
     lv_obj_set_style_radius(bluetooth_icon_container, 100, NULL);
-    lv_obj_set_style_bg_color(bluetooth_icon_container, lv_color_hex(0xFF40FA), NULL);
+    lv_obj_set_style_bg_color(bluetooth_icon_container, lv_color_hex(0x628EFF), NULL);
     lv_obj_set_style_bg_opa(bluetooth_icon_container, 15, NULL);
-    lv_obj_set_style_shadow_color(bluetooth_icon_container, lv_color_hex(0xFF40FA), NULL);
+    lv_obj_set_style_shadow_color(bluetooth_icon_container, lv_color_hex(0x628EFF), NULL);
     lv_obj_set_style_shadow_opa(bluetooth_icon_container, 255, NULL);
     lv_obj_set_style_shadow_width(bluetooth_icon_container, 25, NULL);
     lv_obj_set_style_shadow_spread(bluetooth_icon_container, 1, NULL);
@@ -65,24 +66,22 @@ void ui_settingsMenu_screen_init(void)
 
 
 
+    lv_obj_t *battery_container = lv_obj_create(list_container);
+    lv_obj_set_size(battery_container, 225, 60);
+    lv_obj_set_style_bg_opa(battery_container, 0, NULL);
+    lv_obj_set_style_border_opa(battery_container, 0, NULL);
+    lv_obj_align(bluetooth_container, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_clear_flag(battery_container, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_grid_cell(battery_container, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
 
-    // Battery Button -----------------------------------------------------------------------------------------------------
-
-    lv_obj_t *battery_btn = lv_list_add_btn(list, NULL, NULL); // Use NULL for empty text
-
-    lv_obj_t *battery_container = lv_obj_create(battery_btn);
-
-    lv_obj_set_width(battery_container, 210);
-    lv_obj_set_height(battery_container, 75);
-    
     lv_obj_t *battery_label = lv_label_create(battery_container);
     lv_label_set_text(battery_label, "Battery");
-    lv_obj_set_style_text_font(battery_label, &lv_font_montserrat_20, NULL);
-    lv_obj_align(battery_label, LV_ALIGN_CENTER, 0, 0);
-    
+    lv_obj_set_style_text_font(battery_label, &roboto_18, NULL);
+    lv_obj_align(battery_label, LV_ALIGN_LEFT_MID, 60, 0);
+
     lv_obj_t * battery_icon_container = lv_obj_create(battery_container);
-    lv_obj_set_width(battery_icon_container, 50);
-    lv_obj_set_height(battery_icon_container, 50);
+    lv_obj_set_width(battery_icon_container, 45);
+    lv_obj_set_height(battery_icon_container, 45);
     lv_obj_set_align(battery_icon_container, LV_ALIGN_LEFT_MID);
 
     lv_obj_set_style_border_color(battery_icon_container, lv_color_hex(0x7CFF9A), NULL);
@@ -95,46 +94,99 @@ void ui_settingsMenu_screen_init(void)
     lv_obj_set_style_shadow_width(battery_icon_container, 25, NULL);
     lv_obj_set_style_shadow_spread(battery_icon_container, 1, NULL);
 
-    //lv_obj_add_event_cb(batteryButton, button_event_handler, LV_EVENT_ALL, NULL);
-
-
-    // Time Zone Button -----------------------------------------------------------------------------------------------------
-
-    lv_obj_t *time_zone_btn = lv_list_add_btn(list, NULL, NULL); // Use NULL for empty text
-    lv_obj_set_width(time_zone_btn, 210);
-    lv_obj_set_height(time_zone_btn, 75);
-
-    lv_obj_t *time_zone_container = lv_obj_create(time_zone_btn);
-    lv_obj_set_width(time_zone_container, 210);
-    lv_obj_set_height(time_zone_container, 75);
-    lv_obj_align_to(time_zone_container, NULL, LV_ALIGN_LEFT_MID, 0, 0);
-    lv_obj_set_style_bg_color(time_zone_container, lv_color_white(), NULL);
-    
-    lv_obj_t *time_zone_label = lv_label_create(time_zone_container);
-    lv_label_set_text(time_zone_label, "Time Zone");
-    lv_obj_set_style_text_font(time_zone_label, &lv_font_montserrat_20, NULL);
-    lv_obj_align(time_zone_label, LV_ALIGN_CENTER, 0, 0);
-    
-    lv_obj_t * time_zone_icon_container = lv_obj_create(time_zone_container);
-    lv_obj_set_width(time_zone_icon_container, 50);
-    lv_obj_set_height(time_zone_icon_container, 50);
-    lv_obj_set_align(time_zone_icon_container, LV_ALIGN_LEFT_MID);
-
-    lv_obj_set_style_border_color(time_zone_icon_container, lv_color_hex(0x628EFF), NULL);
-    lv_obj_set_style_border_width(time_zone_icon_container, 3, NULL);
-    lv_obj_set_style_radius(time_zone_icon_container, 100, NULL);
-    lv_obj_set_style_bg_color(time_zone_icon_container, lv_color_hex(0x628EFF), NULL);
-    lv_obj_set_style_bg_opa(time_zone_icon_container, 15, NULL);
-    lv_obj_set_style_shadow_color(time_zone_icon_container, lv_color_hex(0x628EFF), NULL);
-    lv_obj_set_style_shadow_opa(time_zone_icon_container, 255, NULL);
-    lv_obj_set_style_shadow_width(time_zone_icon_container, 25, NULL);
-    lv_obj_set_style_shadow_spread(time_zone_icon_container, 1, NULL);
-
-    //lv_obj_add_event_cb(batteryButton, button_event_handler, LV_EVENT_ALL, NULL);
 
 
 
 
- 
+    lv_obj_t *brightness_container = lv_obj_create(list_container);
+    lv_obj_set_size(brightness_container, 225, 60);
+    lv_obj_set_style_border_opa(brightness_container, 0, NULL);
+    lv_obj_set_style_bg_opa(brightness_container, 0, NULL);
+    lv_obj_align(bluetooth_container, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_clear_flag(brightness_container, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_grid_cell(brightness_container, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+    lv_obj_t *brightness_label = lv_label_create(brightness_container);
+    lv_label_set_text(brightness_label, "Brightness");
+    lv_obj_set_style_text_font(brightness_label, &roboto_18, NULL);
+    lv_obj_align(brightness_label, LV_ALIGN_LEFT_MID, 60, 0);
+
+    lv_obj_t * brightness_icon_container = lv_obj_create(brightness_container);
+    lv_obj_set_width(brightness_icon_container, 45);
+    lv_obj_set_height(brightness_icon_container, 45);
+    lv_obj_set_align(brightness_icon_container, LV_ALIGN_LEFT_MID);
+
+    lv_obj_set_style_border_color(brightness_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_border_width(brightness_icon_container, 3, NULL);
+    lv_obj_set_style_radius(brightness_icon_container, 100, NULL);
+    lv_obj_set_style_bg_color(brightness_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_bg_opa(brightness_icon_container, 15, NULL);
+    lv_obj_set_style_shadow_color(brightness_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_shadow_opa(brightness_icon_container, 255, NULL);
+    lv_obj_set_style_shadow_width(brightness_icon_container, 25, NULL);
+    lv_obj_set_style_shadow_spread(brightness_icon_container, 1, NULL);
+
+
+
+
+    lv_obj_t *date_container = lv_obj_create(list_container);
+    lv_obj_set_size(date_container, 225, 60);
+    lv_obj_set_style_border_opa(date_container, 0, NULL);
+    lv_obj_set_style_bg_opa(date_container, 0, NULL);
+    lv_obj_align(bluetooth_container, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_clear_flag(date_container, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_grid_cell(date_container, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+    lv_obj_t *date_label = lv_label_create(date_container);
+    lv_label_set_text(date_label, "Time & Date");
+    lv_obj_set_style_text_font(date_label, &roboto_18, NULL);
+    lv_obj_align(date_label, LV_ALIGN_LEFT_MID, 60, 0);
+
+    lv_obj_t * date_icon_container = lv_obj_create(date_container);
+    lv_obj_set_width(date_icon_container, 45);
+    lv_obj_set_height(date_icon_container, 45);
+    lv_obj_set_align(date_icon_container, LV_ALIGN_LEFT_MID);
+
+    lv_obj_set_style_border_color(date_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_border_width(date_icon_container, 3, NULL);
+    lv_obj_set_style_radius(date_icon_container, 100, NULL);
+    lv_obj_set_style_bg_color(date_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_bg_opa(date_icon_container, 15, NULL);
+    lv_obj_set_style_shadow_color(date_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_shadow_opa(date_icon_container, 255, NULL);
+    lv_obj_set_style_shadow_width(date_icon_container, 25, NULL);
+    lv_obj_set_style_shadow_spread(date_icon_container, 1, NULL);
+
+
+
+
+
+    lv_obj_t *preference_container = lv_obj_create(list_container);
+    lv_obj_set_size(preference_container, 225, 60);
+    lv_obj_set_style_border_opa(preference_container, 0, NULL);
+    lv_obj_set_style_bg_opa(preference_container, 0, NULL);
+    lv_obj_align(bluetooth_container, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_clear_flag(preference_container, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_grid_cell(preference_container, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_START, 2, 1);
+
+    lv_obj_t *preference_label = lv_label_create(preference_container);
+    lv_label_set_text(preference_label, "Preferences");
+    lv_obj_set_style_text_font(preference_label, &roboto_18, NULL);
+    lv_obj_align(preference_label, LV_ALIGN_LEFT_MID, 60, 0);
+
+    lv_obj_t * preference_icon_container = lv_obj_create(preference_container);
+    lv_obj_set_width(preference_icon_container, 45);
+    lv_obj_set_height(preference_icon_container, 45);
+    lv_obj_set_align(preference_icon_container, LV_ALIGN_LEFT_MID);
+
+    lv_obj_set_style_border_color(preference_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_border_width(preference_icon_container, 3, NULL);
+    lv_obj_set_style_radius(preference_icon_container, 100, NULL);
+    lv_obj_set_style_bg_color(preference_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_bg_opa(preference_icon_container, 15, NULL);
+    lv_obj_set_style_shadow_color(preference_icon_container, lv_color_hex(0xA4A4A4), NULL);
+    lv_obj_set_style_shadow_opa(preference_icon_container, 255, NULL);
+    lv_obj_set_style_shadow_width(preference_icon_container, 25, NULL);
+    lv_obj_set_style_shadow_spread(preference_icon_container, 1, NULL);
 
 }
