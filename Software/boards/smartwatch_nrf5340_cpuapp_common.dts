@@ -19,14 +19,22 @@
 		//invert-x;
 	};
 
+
+	gpio_fwd: nrf-gpio-forwarder {
+		compatible = "nordic,nrf-gpio-forwarder";
+		uart{
+			status = "disabled";
+		};
+	};
+
 	zephyr,user {
 		hr-gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
 		extint-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 		forceon-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+		bl-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
 	};
 	
 };
-
 
 
 &uart0{
@@ -75,7 +83,6 @@
 		width = <240>;
 		label = "buydisplay_gc9a01";
 		height = <240>;
-		bl-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
 		dc-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
 	};
@@ -112,12 +119,12 @@
 		reg = < 0x68 >;
 		label = "bosch_bmi270";
 	};
-	/* 
-	max17048@37 {
+	
+	max17048@36 {
 		compatible = "maxim,max17048";
-		reg = <0x37>;
+		reg = <0x36>;
 	};
-	*/
+	
 };
 
 
@@ -130,6 +137,7 @@
 	pinctrl-names = "default", "sleep";
 	clock-frequency = <100000>;
 	label = "I2C_2";
+
 
 	max30101@57 {
 		compatible = "maxim,max30101";

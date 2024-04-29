@@ -84,6 +84,8 @@ lv_obj_t * ui_Container1;
 lv_obj_t * ui_Chart1;
 lv_obj_t * ui_Label6;
 
+lv_obj_t * ui_Label_charge;
+
 
 // SCREEN: ui_Brightness
 void ui_Brightness_screen_init(void);

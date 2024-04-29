@@ -62,6 +62,8 @@ extern lv_obj_t * ui_GpsTest;
 extern lv_obj_t * ui_posLabel;
 extern lv_obj_t * ui_utcLabel;
 extern lv_obj_t * ui_statusLabel;
+extern lv_obj_t * ui_Label_charge;
+
 // SCREEN: ui_Battery
 void ui_Battery_screen_init(void);
 void ui_event_Battery(lv_event_t * e);
