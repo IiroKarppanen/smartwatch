@@ -4,6 +4,22 @@
 // Project name: smartwatch_ui
 
 #include "ui.h"
+#include "../sensor_data/battery_gauge.h"
+
+static void update_screen(){
+
+    // Fetch battery data
+    struct BatteryData battery_data = fetch_battery_data();
+
+    // Update label
+    char charge_str[5]; 
+    snprintf(charge_str, sizeof(charge_str), "%d%%", battery_data.relative_state_of_charge);
+	lv_label_set_text(ui_Label5, charge_str);
+
+    // Update arc
+    lv_arc_set_value(ui_Arc3, battery_data.relative_state_of_charge);
+    lv_obj_set_style_arc_color(ui_Arc3, lv_color_hsv_to_rgb(battery_data.relative_state_of_charge, 75, 100), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+}
 
 
 // Event handler for the switch
@@ -83,5 +99,7 @@ void ui_Battery_screen_init(void)
     lv_obj_set_style_pad_bottom(ui_Label7, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Battery, ui_event_Battery, LV_EVENT_ALL, NULL);
+
+    lv_timer_create(update_screen, 1000, NULL); 
 
 }

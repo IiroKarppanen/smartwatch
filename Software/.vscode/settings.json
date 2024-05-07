@@ -42,7 +42,13 @@
         "rtc.h": "c",
         "sensor_data.h": "c",
         "ui.h": "c",
-        "numbers": "c"
+        "numbers": "c",
+        "gpio.h": "c",
+        "clock.h": "c",
+        "pwm.h": "c",
+        "display.h": "c",
+        "inertial_measurement.h": "c",
+        "fuel_gauge.h": "c"
     },
     "files.watcherExclude": {
         "**/target": true

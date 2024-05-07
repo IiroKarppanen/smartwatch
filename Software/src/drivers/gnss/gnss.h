@@ -7,7 +7,8 @@
 #include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/gpio.h>
 
-struct gps_data {
+extern struct gps_data {
+    char nmea_message[100];
     char time[12];      
     char latitude[12];  
     char longitude[13];

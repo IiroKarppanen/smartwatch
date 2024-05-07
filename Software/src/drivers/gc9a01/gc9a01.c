@@ -120,7 +120,7 @@ static const uint8_t initcmd[] = {
     0x8E, 1, 0xFF,
     0x8F, 1, 0xFF,
     0xB6, 2, 0x00, 0x00,
-    GC9A01A_MADCTL, 1, 0x48,
+    GC9A01A_MADCTL, 1, 0x28, // 0x18, 0x28, 0x48, 0x88
     GC9A01A_PIXFMT, 1, COLOR_MODE_16_BIT, //0x06,
 
     0x90, 4, 0x08, 0x08, 0x08, 0x08,
@@ -176,8 +176,8 @@ struct gc9a01_frame {
     struct gc9a01_point start, end;
 };
 
-static struct gc9a01_frame frame = {{0, 0}, {DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1}};
 
+static struct gc9a01_frame frame = {{0, 0}, {DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1}};
 
 
 static inline int gc9a01_write_cmd(const struct device *dev, uint8_t cmd,
@@ -224,12 +224,14 @@ static void gc9a01_set_frame(const struct device *dev, struct gc9a01_frame frame
 
 static int gc9a01_blanking_off(const struct device *dev)
 {
-    return gc9a01_write_cmd(dev, GC9A01A_DISPOFF, NULL, 0);
+    gc9a01_write_cmd(dev, GC9A01A_SLPOUT, NULL, 0);
+    k_msleep(150);
 }
 
 static int gc9a01_blanking_on(const struct device *dev)
 {
-    return gc9a01_write_cmd(dev, GC9A01A_DISPON, NULL, 0);
+    gc9a01_write_cmd(dev, GC9A01A_SLPIN, NULL, 0);
+    k_msleep(150);
 }
 
 static int gc9a01_write(const struct device *dev, const uint16_t x, const uint16_t y,
@@ -358,7 +360,7 @@ static int gc9a01_controller_init(const struct device *dev)
         i++;
     }
 
-    
+    //gc9a01a_set_orientation(dev, DISPLAY_ORIENTATION_ROTATED_90);
     return 0;
 }
 
@@ -388,6 +390,18 @@ static int gc9a01_init(const struct device *dev)
 
     return gc9a01_controller_init(dev);
 }
+
+
+
+
+void display_sleep(const struct device *dev){
+    gc9a01_write_cmd(dev, GC9A01A_SLPIN, NULL, 0);
+}
+
+void display_sleepout(const struct device *dev){
+    gc9a01_write_cmd(dev, GC9A01A_SLPOUT, NULL, 0);
+}
+
 
 static const struct gc9a01_config gc9a01_config = {
     .bus = SPI_DT_SPEC_INST_GET(0, SPI_OP_MODE_MASTER | SPI_WORD_SET(8), 0),

@@ -10,9 +10,8 @@
 extern "C" {
 #endif
 
-
 #include "lvgl.h"
-#include "icons/icons.h"
+#include "icons/icons.h" 
 #include "ui_helpers.h"
 #include "ui_events.h"
 // SCREEN: ui_Home
@@ -27,6 +26,14 @@ extern lv_obj_t * ui_Arc13;
 extern lv_obj_t * ui_Label11;
 extern lv_obj_t * ui_Image7;
 extern lv_obj_t * ui_Image12;
+// SCREEN: ui_powerManagment
+void ui_powerManagment_screen_init(void);
+void ui_event_powerManagment(lv_event_t * e);
+extern lv_obj_t * ui_powerManagment;
+extern lv_obj_t * ui_Switch4;
+extern lv_obj_t * ui_Switch5;
+extern lv_obj_t * ui_Label15;
+extern lv_obj_t * ui_Label17;
 // SCREEN: ui_mainMenu
 void ui_mainMenu_screen_init(void);
 void ui_event_mainMenu(lv_event_t * e);
@@ -48,13 +55,17 @@ void ui_event_settingsMenu(lv_event_t * e);
 extern lv_obj_t * ui_settingsMenu;
 void ui_event_Arc7(lv_event_t * e);
 extern lv_obj_t * ui_Arc7;
+void ui_event_Arc8(lv_event_t * e);
 extern lv_obj_t * ui_Arc8;
-extern lv_obj_t * ui_Arc9;
+void ui_event_Arc10(lv_event_t * e);
 extern lv_obj_t * ui_Arc10;
-extern lv_obj_t * ui_Arc11;
-extern lv_obj_t * ui_Image9;
-extern lv_obj_t * ui_Image10;
-extern lv_obj_t * ui_Image11;
+void ui_event_Arc14(lv_event_t * e);
+extern lv_obj_t * ui_Arc14;
+extern lv_obj_t * ui_Label1;
+extern lv_obj_t * ui_Label13;
+extern lv_obj_t * ui_Label14;
+void ui_event_Arc9(lv_event_t * e);
+extern lv_obj_t * ui_Arc9;
 // SCREEN: ui_GpsTest
 void ui_GpsTest_screen_init(void);
 void ui_event_GpsTest(lv_event_t * e);
@@ -62,6 +73,7 @@ extern lv_obj_t * ui_GpsTest;
 extern lv_obj_t * ui_posLabel;
 extern lv_obj_t * ui_utcLabel;
 extern lv_obj_t * ui_statusLabel;
+
 extern lv_obj_t * ui_Label_charge;
 
 // SCREEN: ui_Battery
@@ -121,9 +133,6 @@ LV_IMG_DECLARE(ui_img_headphones_png);    // assets\headphones.png
 LV_IMG_DECLARE(ui_img_heart_png);    // assets\heart.png
 LV_IMG_DECLARE(ui_img_settings_icon_png);    // assets\settings_icon.png
 LV_IMG_DECLARE(ui_img_battery_full_png);    // assets\battery_full.png
-LV_IMG_DECLARE(ui_img_bluetooth_png);    // assets\bluetooth.png
-LV_IMG_DECLARE(ui_img_brightness_png);    // assets\brightness.png
-LV_IMG_DECLARE(ui_img_calendar_png);    // assets\calendar.png
 LV_IMG_DECLARE(ui_img_1111712444);    // assets\icons8-heart-48.png
 LV_IMG_DECLARE(ui_img_heart16_png);    // assets\heart16.png
 LV_IMG_DECLARE(ui_img_heart20_png);    // assets\heart20.png

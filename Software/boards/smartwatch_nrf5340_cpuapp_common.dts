@@ -1,4 +1,4 @@
-//#include "smartwatch_nrf5340_cpuapp_common_pincontrol.dtsi"
+#include "smartwatch_nrf5340_cpuapp_common_pincontrol.dtsi"
 
 
 / {
@@ -43,13 +43,14 @@
 	label = "UART_0";
 	pinctrl-0 = <&uart0_default>;
 	pinctrl-1 = <&uart0_sleep>;
-	/* 
-	gnss: gnss-nmea-generic {
-		compatible = "gnss-nmea-generic";
-	};
-	*/
-	
 };
+
+
+&button0 {
+	status = "disabled";
+};
+
+
 
 &pwm0 {
 	status = "disabled";
@@ -126,8 +127,6 @@
 	};
 	
 };
-
-
 
 &i2c2 {
 	compatible = "nordic,nrf-twim";

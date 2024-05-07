@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/sys/ring_buffer.h>
 #include <lvgl.h>
 #include <ui.h>
-
-const struct device *uart;
 
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
@@ -18,168 +18,251 @@ const struct gpio_dt_spec extint = GPIO_DT_SPEC_GET(ZEPHYR_USER_NODE, extint_gpi
 const struct gpio_dt_spec forceon = GPIO_DT_SPEC_GET(ZEPHYR_USER_NODE, forceon_gpios);
 
 
-
-#define UART_BUF_SIZE 1024
-
-static uint8_t uart_buf[UART_BUF_SIZE];
-
-static size_t buf_idx = 0;
+const struct uart_config uart_cfg = {
+	.baudrate = 9600,
+	.parity = UART_CFG_PARITY_NONE,
+	.stop_bits = UART_CFG_STOP_BITS_1,
+	.data_bits = UART_CFG_DATA_BITS_8,
+	.flow_ctrl = UART_CFG_FLOW_CTRL_NONE
+};
 
 
 struct gps_data {
+	char nmea_message[100];
     char time[12];      
     char latitude[12];  
     char longitude[13];
     char status;        
 };
 
+struct gps_data gps_info;
 
-static struct gps_data gps_info;
+const struct device *uart;
 
-
-static void parse_nmea(const char *sentence) {
-    printk("Received NMEA sentence: %s\n", sentence);
-
-	// $GPGLL,,,,,174518.086,V,N*7A
-
-	//printk("len: %d", strlen(sentence));
-
-	//  ,,,,174518.086,V,
-
-	int prefix;
-	int suffix;
-
-	size_t len = strlen(sentence);
-
-    
-	if (strstr(sentence, "GPGGA") != NULL) {
-
-
-		//lv_label_set_text(ui_posLabel, sentence);
-
-		/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-		
-		
-		prefix = 7;
-		suffix = 17;
-
-		// Calculate the start and length of the substring to extract
-		char* start_ptr = sentence + prefix; // Pointer to the start of the substring
-		size_t substring_len = len - prefix - suffix; // Length of the substring
-
-		// Allocate memory for the substring (including space for the null terminator)
-		char pos[substring_len + 1];
-
-		// Copy the substring from the original sentence
-		memcpy(pos, start_ptr, substring_len);
-		pos[substring_len] = '\0'; // Null terminate the pos substring
-
-		// Print the pos substring
-		printk("Position: %s\n", pos);
-
-		prefix = 11;
-		suffix = 11;
-
-		// Calculate the start and length of the substring to extract
-		start_ptr = sentence + prefix; // Pointer to the start of the substring
-		substring_len = len - prefix - suffix; // Length of the substring
-
-		// Allocate memory for the substring (including space for the null terminator)
-		char time[substring_len + 1];
-
-		// Copy the substring from the original sentence
-		memcpy(time, start_ptr, substring_len);
-		time[substring_len] = '\0'; // Null terminate the time substring
-
-		// Create a new string to hold the formatted time (including null terminator)
-		char formatted_time[9]; // "HH:MM:SS\0"
-
-		// Insert colons at specific positions to format the time string
-		sprintf(formatted_time, "%c%c:%c%c:%c%c", 
-				time[0], time[1], // Hours
-				time[2], time[3], // Minutes
-				time[4], time[5]); // Seconds
-
-		// Print the formatted time string
-		printk("Formatted Time: %s\n", formatted_time);
-
-		*/
-	}
-    
-}
+#define RX_BUF_SIZE 80
+static uint8_t rx_buf[RX_BUF_SIZE] = {0}; 
+static size_t rx_buf_idx = 0;
 
 
 
-static void uart_cb(const struct device *x, void *user_data) {
-    uart_irq_update(x);
-    int data_length = 0;
+static void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data)
+{
+    switch (evt->type) {
+        case UART_RX_RDY:
 
-    if (uart_irq_rx_ready(x)) {
-        data_length = uart_fifo_read(x, &uart_buf[buf_idx], UART_BUF_SIZE - buf_idx);
-        buf_idx += data_length;
+			// Append the received character to the buffer
+			rx_buf[rx_buf_idx++] = evt->data.rx.buf[0];
 
-        // Search for end of line characters and process sentences
-        for (size_t i = 0; i < buf_idx; i++) {
-            if (uart_buf[i] == '\n' || uart_buf[i] == '\r') {
-                uart_buf[i] = 0; // Null-terminate the sentence
-                parse_nmea((char *)uart_buf);
-                buf_idx = 0; // Reset buffer index after processing
-                break;
+			// Check for end of message conditions
+			if (rx_buf_idx >= (RX_BUF_SIZE - 1)) {  
+				rx_buf[rx_buf_idx] = '\0';  // Null-terminate the buffer
+
+				int start_index = -1;
+				int end_index = -1;
+
+				// Find the start ('$') and end ('\n' or '\r') of NMEA message
+				for (int i = 0; i < strlen(rx_buf); i++) {
+					if (rx_buf[i] == '$') {
+						start_index = i;
+					}
+					if (rx_buf[i] == '\n' || rx_buf[i] == '\r') {
+						end_index = i;
+						break; 
+					}
+				}
+
+				if (start_index != -1 && end_index != -1) {
+					int length = end_index - start_index;
+					strncpy(gps_info.nmea_message, &rx_buf[start_index], length);
+					gps_info.nmea_message[length] = '\0'; 
+					printk("Extracted NMEA Message: %s\n", gps_info.nmea_message);
+				} else {
+					printk("NMEA Message not found or invalid format\n");
+				}
+
+
+				/* PARSING PROCESS */
+
+				char time[15] = "";
+				char latitude[25] = "";
+				char longitude[25] = "";
+				char status[2] = "";
+
+				if(strstr(gps_info.nmea_message, "GPRMC") != NULL){
+
+
+					printk("Extracting values from: %s\n", gps_info.nmea_message);
+
+					// Create a copy of the input string for tokenization
+					char copy[strlen(gps_info.nmea_message) + 1];
+					strcpy(copy, gps_info.nmea_message);
+
+					char *token;
+					token = strtok(copy, ",");
+
+				
+					// Tokenize the string using ',' as delimiter and parse relevant fields
+					int field_count = 1;
+					while ((token = strtok(NULL, ",")) != NULL) {
+						switch (field_count) {
+							case 1: // Skip sentence identifier ($GPRMC or $GPGLL)
+								break;
+							case 2: // Time (HHMMSS.SSS format)
+								if (strlen(token) >= 6) {
+									strncpy(time, token, sizeof(time) - 1);
+									time[sizeof(time) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							case 3: // GPS Fix Status (A or V)
+								if (strlen(token) > 0) {
+									strncpy(status, token, sizeof(status) - 1);
+									status[sizeof(status) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							case 4: // Latitude (DDMM.MMMM format or empty)
+								if (strlen(token) > 0) {
+									strncpy(latitude, token, sizeof(latitude) - 1);
+									latitude[sizeof(latitude) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							case 5: // Latitude direction (N or S)
+								if (strlen(latitude) > 0) {
+									strncat(latitude, token, sizeof(latitude) - strlen(latitude) - 1);
+									latitude[sizeof(latitude) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							case 6: // Longitude (DDDMM.MMMM format or empty)
+								if (strlen(token) > 0) {
+									strncpy(longitude, token, sizeof(longitude) - 1);
+									longitude[sizeof(longitude) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							case 7: // Longitude direction (E or W)
+								if (strlen(longitude) > 0) {
+									strncat(longitude, token, sizeof(longitude) - strlen(longitude) - 1);
+									longitude[sizeof(longitude) - 1] = '\0'; // Ensure null-termination
+								}
+								break;
+							default:
+								break;
+						}
+						field_count++;
+					}
+
+					if (strlen(time) > 0) {
+						printk("time: %s\n", time);
+					}
+					if (strlen(latitude) > 0) {
+						printk("latitude: %s\n", latitude);
+					}
+					if (strlen(longitude) > 0) {
+						printk("longitude: %s\n", longitude);
+					}
+					if (strlen(status) > 0) {
+						printk("status: %s\n", status);
+					}
+
+				}
+				
+
+				// Reset buffer for the next message
+				rx_buf_idx = 0;
+				memset(rx_buf, 0, sizeof(rx_buf));
+			}
+
+            break;
+
+        case UART_RX_BUF_REQUEST:
+            uart_rx_buf_rsp(dev, rx_buf, sizeof(rx_buf));
+            break;
+
+
+        case UART_RX_DISABLED:
+
+            int ret = uart_rx_enable(dev, rx_buf, sizeof(rx_buf), 100);
+            if (ret != 0) {
+                printk("uart rx enable error %d\n", ret);
             }
-        }
+            break;
+
+        default:
+            break;
     }
 }
 
 
-
 void init_gnss(){
 
-	uart = device_get_binding("UART_0");
-	
-    const struct uart_config uart_cfg = {
-        .baudrate = 9600,
-        .parity = UART_CFG_PARITY_NONE,
-        .stop_bits = UART_CFG_STOP_BITS_1,
-        .data_bits = UART_CFG_DATA_BITS_8,
-        .flow_ctrl = UART_CFG_FLOW_CTRL_NONE
-    };
+	gpio_pin_configure_dt(&extint, GPIO_OUTPUT_HIGH);
 
+	//uart = device_get_binding("UART_0");
+	uart = DEVICE_DT_GET(DT_NODELABEL(uart0));
+	if (!uart) {
+        printk("UART device not found\n");
+        return;
+    }
+	
 	int ret;
-    ret = uart_irq_callback_user_data_set(uart, uart_cb, NULL);
+	ret = uart_configure(uart, &uart_cfg); 
 	if(ret != 0){
-		printk("UART Callback configure failed with error code: %d", ret);
+		printk("UART Configure ERROR %d", ret);
 	}
 
-	k_msleep(5000); 
-	uart_irq_rx_enable(uart);
-
-    gpio_pin_configure_dt(&extint, GPIO_OUTPUT_LOW);
-	//gpio_pin_configure_dt(&forceon, GPIO_OUTPUT_HIGH);
+	ret = uart_callback_set(uart, uart_cb, NULL);
+	if(ret != 0){
+		printk("UART CALLBACK CONFIGURE ERROR %d\n", ret);
+	}
 	
+	ret = uart_rx_enable(uart, rx_buf, sizeof(rx_buf), 100);
+	if(ret != 0){
+		printk("uart rx enable error %d\n", ret);
+	}
+
+	printk("UART CONFIGURE COMPLETE!\n");
+	
+
+	k_msleep(3000); 
+	printk("Entering standby mode...\n");
 	enter_standby_mode();
+
 	//exit_standby_mode();
 
 }
 
-const char *standby_command = "$PMTK161,0*28";
 
 
-void send_uart_command(const struct device *uart, const char *cmd) {
-    size_t cmd_len = strlen(cmd);
-    uart_tx(uart, (const uint8_t *)cmd, cmd_len, SYS_FOREVER_MS);
+
+
+
+void enable_periodic_standby_mode() {
+    const char *command = "$PMTK225,2,3000,12000,18000,72000*15\r\n";
+	// 3 seconds full mode
+	// 12 seconds sleep
+	// 72 seconds standby
+
+    uart_tx(uart, (uint8_t)command, sizeof((uint8_t)command), SYS_FOREVER_MS);
 }
 
 
 void enter_standby_mode(){
-    // or send “$PMTK161,0*28” via uart
-    //gpio_pin_set_dt(&extint, 0);
-	send_uart_command(uart, standby_command);
+
+	uart_rx_disable(uart); // Disable RX before sending standby command
+
+	gpio_pin_set_dt(&extint, 0);
+	const char cmd[] = "$PMTK161,0*28\r\n";
+	int ret = uart_tx(uart, (const uint8_t *)cmd, strlen(cmd), SYS_FOREVER_MS);
+	if(ret != 0){
+		printk("UART TX ERROR %d\n", ret);
+	}
+
+	uart_rx_enable(uart, rx_buf, sizeof(rx_buf), 100);
+
 }
 
 void exit_standby_mode(){
-    // or send anything via uart
     gpio_pin_set_dt(&extint, 1);
 }
+
 
 void exit_backup_mode(){
     gpio_pin_set_dt(&forceon, 1);

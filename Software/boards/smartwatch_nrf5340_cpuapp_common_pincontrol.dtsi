@@ -46,15 +46,17 @@
 	};
 
 
+
+	
 	// UART
 	uart0_default: uart0_default {
 		group1 {
 			psels = <NRF_PSEL(UART_TX, 0, 20)>,
-				<NRF_PSEL(UART_RTS, 0, 10)>;
+			<NRF_PSEL(UART_RTS, 0, 11)>;
 		};
 		group2 {
 			psels = <NRF_PSEL(UART_RX, 1, 0)>,
-				<NRF_PSEL(UART_CTS, 0, 24)>;
+				<NRF_PSEL(UART_CTS, 0, 12)>;
 			bias-pull-up;
 		};
 	};
@@ -62,14 +64,13 @@
 	uart0_sleep: uart0_sleep {
 		group1 {
 			psels = <NRF_PSEL(UART_TX, 0, 20)>,
-				<NRF_PSEL(UART_RTS, 0, 10)>;
+			<NRF_PSEL(UART_RTS, 0, 11)>;
 		};
 		group2 {
 			psels = <NRF_PSEL(UART_RX, 1, 0)>,
-				<NRF_PSEL(UART_CTS, 0, 24)>;
+				<NRF_PSEL(UART_CTS, 0, 12)>;
 			bias-pull-up;
 		};
-	};
-	
+	};	
 	
 };

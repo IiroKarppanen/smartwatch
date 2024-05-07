@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "ui_helpers.h"
 
+
 ///////////////////// VARIABLES ////////////////////
 
 
@@ -21,6 +22,16 @@ lv_obj_t * ui_Arc13;
 lv_obj_t * ui_Label11;
 lv_obj_t * ui_Image7;
 lv_obj_t * ui_Image12;
+
+
+// SCREEN: ui_powerManagment
+void ui_powerManagment_screen_init(void);
+void ui_event_powerManagment(lv_event_t * e);
+lv_obj_t * ui_powerManagment;
+lv_obj_t * ui_Switch4;
+lv_obj_t * ui_Switch5;
+lv_obj_t * ui_Label15;
+lv_obj_t * ui_Label17;
 
 
 // SCREEN: ui_mainMenu
@@ -46,13 +57,17 @@ void ui_event_settingsMenu(lv_event_t * e);
 lv_obj_t * ui_settingsMenu;
 void ui_event_Arc7(lv_event_t * e);
 lv_obj_t * ui_Arc7;
+void ui_event_Arc8(lv_event_t * e);
 lv_obj_t * ui_Arc8;
-lv_obj_t * ui_Arc9;
+void ui_event_Arc10(lv_event_t * e);
 lv_obj_t * ui_Arc10;
-lv_obj_t * ui_Arc11;
-lv_obj_t * ui_Image9;
-lv_obj_t * ui_Image10;
-lv_obj_t * ui_Image11;
+void ui_event_Arc14(lv_event_t * e);
+lv_obj_t * ui_Arc14;
+lv_obj_t * ui_Label1;
+lv_obj_t * ui_Label13;
+lv_obj_t * ui_Label14;
+void ui_event_Arc9(lv_event_t * e);
+lv_obj_t * ui_Arc9;
 
 
 // SCREEN: ui_GpsTest
@@ -83,6 +98,7 @@ lv_obj_t * ui_Label3;
 lv_obj_t * ui_Container1;
 lv_obj_t * ui_Chart1;
 lv_obj_t * ui_Label6;
+
 
 lv_obj_t * ui_Label_charge;
 
@@ -152,6 +168,21 @@ void ui_event_Home(lv_event_t * e)
         _ui_screen_change(&ui_Pulse, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_Pulse_screen_init);
     }
 }
+void ui_event_powerManagment(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_SensorTest, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_SensorTest);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_GpsTest, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_GpsTest_screen_init);
+    }
+    
+}
 void ui_event_mainMenu(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -192,13 +223,57 @@ void ui_event_Arc7(lv_event_t * e)
         (e);
     }
 }
+void ui_event_Arc8(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_PRESSED) {
+        (e);
+    }
+    if(event_code == LV_EVENT_RELEASED) {
+        (e);
+    }
+}
+void ui_event_Arc10(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_PRESSED) {
+        (e);
+    }
+    if(event_code == LV_EVENT_RELEASED) {
+        (e);
+    }
+}
+void ui_event_Arc14(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_PRESSED) {
+        (e);
+    }
+    if(event_code == LV_EVENT_RELEASED) {
+        (e);
+    }
+}
+void ui_event_Arc9(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_PRESSED) {
+        (e);
+    }
+    if(event_code == LV_EVENT_RELEASED) {
+        (e);
+    }
+}
 void ui_event_GpsTest(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_SensorTest, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_SensorTest_screen_init);
+        _ui_screen_change(&ui_powerManagment, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_powerManagment_screen_init);
     }
 }
 void ui_event_Battery(lv_event_t * e)
@@ -263,7 +338,7 @@ void ui_event_SensorTest(lv_event_t * e)
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_GpsTest, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_GpsTest_screen_init);
+        _ui_screen_change(&ui_powerManagment, LV_SCR_LOAD_ANIM_NONE, 5, 0, &ui_powerManagment_screen_init);
     }
 }
 
@@ -272,10 +347,16 @@ void ui_event_SensorTest(lv_event_t * e)
 void ui_init(void)
 {
     lv_disp_t * dispp = lv_disp_get_default();
+    //lv_disp_set_rotation(dispp, LV_DISP_ROT_90);
+
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                true, LV_FONT_DEFAULT);
+
+
+    
     lv_disp_set_theme(dispp, theme);
     ui_Home_screen_init();
+    ui_powerManagment_screen_init();
     ui_mainMenu_screen_init();
     ui_settingsMenu_screen_init();
     ui_GpsTest_screen_init();
@@ -285,5 +366,6 @@ void ui_init(void)
     ui_Date_screen_init();
     ui_SensorTest_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_Home);
+    lv_disp_load_scr(ui_powerManagment);
+
 }

@@ -13,6 +13,7 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/pm/device.h>
+//#include "../../sensor_data/sensor_data.h"
 
 #define CST816S_CHIP_ID                 0xB4
 
@@ -87,6 +88,13 @@
 #define EVENT_CONTACT                   0x02
 #define EVENT_NONE                      0x03
 
+enum {
+    ROT_0 = 0,
+    ROT_90,
+    ROT_270,
+    ROT_360
+};
+
 struct cst816d_config {
 	struct i2c_dt_spec i2c;
 	const struct gpio_dt_spec rst_gpio;
@@ -125,13 +133,18 @@ static int cst816d_process(const struct device *dev)
 	col = sys_be16_to_cpu(output.x) & 0x0fff;
 	row = sys_be16_to_cpu(output.y) & 0x0fff;
 
+	// Remap input coordinates if display image is rotated
+	uint16_t rotated_x = row;
+    uint16_t rotated_y = 240 - col - 1;  
+
+
 	event = (output.x & 0xff) >> CST816S_EVENT_BITS_POS;
 	is_pressed = (event == EVENT_CONTACT);
 
 	if (is_pressed) {
 		// These events are generated for the LVGL touch implementation.
-		input_report_abs(dev, INPUT_ABS_X, col, false, K_FOREVER);
-		input_report_abs(dev, INPUT_ABS_Y, row, false, K_FOREVER);
+		input_report_abs(dev, INPUT_ABS_X, rotated_x, false, K_FOREVER);
+		input_report_abs(dev, INPUT_ABS_Y, rotated_y, false, K_FOREVER);
 		input_report_key(dev, INPUT_BTN_TOUCH, 1, true, K_FOREVER);
 	} else {
 		// This event is generated for the LVGL touch implementation.

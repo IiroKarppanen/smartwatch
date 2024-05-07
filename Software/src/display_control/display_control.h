@@ -13,8 +13,5 @@
 #include <zephyr/input/input.h>
 #include <zephyr/drivers/pwm.h>
 
-extern  struct sensor_value acc[3], gyr[3];
 
-void accelometer_task();
-static int init_bmi270();
-void init_sensors();
+extern bool lvgl_task_enabled;

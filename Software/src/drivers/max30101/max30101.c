@@ -8,7 +8,8 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/gpio.h>
-
+#include <lvgl.h>
+#include <ui.h>
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
 
@@ -22,23 +23,32 @@ void timer_handler(struct k_timer *timer_id)
     printk("Timer expired!\n");
 }
 
+double bpm;
 
 
 void init_max30101(){
+
+	gpio_pin_configure_dt(&hr_en, GPIO_OUTPUT_HIGH);
+	gpio_pin_set_dt(&hr_en, 1);
+
+	k_sleep(K_MSEC(5000));
+	printk("starting hr init\n");
+	
     hr_sensor = DEVICE_DT_GET_ANY(maxim_max30101);
 
 	if (hr_sensor == NULL) {
 		printk("Could not get max30101 device\n");
 		return 0;
 	}
+
+	
 	if (!device_is_ready(hr_sensor)) {
 		printk("max30101 device %s is not ready\n", hr_sensor->name);
 		return 0;
 	}
 
-    gpio_pin_configure_dt(&hr_en, GPIO_OUTPUT_HIGH);
-	gpio_pin_set_dt(&hr_en, 1);
-
+	k_sleep(K_MSEC(5000));
+	printk("MAX30101 init complete\n");
 	fetch_pulse();
 }
 
@@ -102,8 +112,10 @@ void fetch_pulse(){
 			printk("AVERAGE INTERVAL: %lf\n", average);
 
 
-			double bpm = 60.0 / (average / 1000.0);
+			bpm = 60.0 / (average / 1000.0);
 			printk("Beats per minute: %.2f\n", bpm);
+
+			lv_label_set_text(ui_Label3, (int)bpm);
 
 			start_time = k_uptime_get();
 			k_timer_start(&my_timer, K_MSEC(10000), K_MSEC(10000)); 
@@ -120,5 +132,4 @@ static const struct sensor_driver_api max30101_driver_api = {
     .sample_fetch = fetch_pulse
 };
 
-
-//SYS_INIT(init_max30101, APPLICATION, CONFIG_SENSOR_INIT_PRIORITY);
+SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);

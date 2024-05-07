@@ -4,6 +4,13 @@
 // Project name: smartwatch_ui
 
 #include "ui.h"
+#include "../drivers/max30101/max30101.h"
+
+void update_bpm(){
+    char bpm_str[8]; 
+    snprintf(bpm_str, sizeof(bpm_str), "%.2f", bpm);
+    lv_label_set_text(ui_Label3, bpm_str);
+}
 
 void ui_Pulse_screen_init(void)
 {
@@ -29,7 +36,7 @@ void ui_Pulse_screen_init(void)
     lv_obj_set_x(ui_Label3, 5);
     lv_obj_set_y(ui_Label3, -77);
     lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label3, "65");
+    lv_label_set_text(ui_Label3, "-");
     lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container1 = lv_obj_create(ui_Pulse);
@@ -96,4 +103,6 @@ void ui_Pulse_screen_init(void)
 
     lv_obj_add_event_cb(ui_Pulse, ui_event_Pulse, LV_EVENT_ALL, NULL);
 
+
+    //lv_timer_create(update_bpm, 800, NULL); 
 }

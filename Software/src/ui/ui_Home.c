@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "../clock/clock.h"
+#include "../sensor_data/battery_gauge.h"
 
 LV_FONT_DECLARE(roboto_14);
 LV_FONT_DECLARE(roboto_18);
@@ -16,6 +17,9 @@ static uint16_t hue = 0;
 lv_obj_t * canvas;
 lv_obj_t * grad;
 
+lv_obj_t * homeBatteryButton;
+lv_obj_t * stepButton;
+
 lv_draw_label_dsc_t label_minutes;
 lv_draw_label_dsc_t label_date;
 lv_draw_label_dsc_t label_charge_symbol;
@@ -24,6 +28,51 @@ lv_obj_t * hour_label;
 
 
 static lv_color_t mask_map[MASK_WIDTH * MASK_HEIGHT];
+
+
+
+
+
+
+void custom_button_anim2(void * var, int32_t value) {
+    lv_obj_set_style_shadow_spread((lv_obj_t *)var, value, NULL);
+    lv_obj_set_style_bg_opa((lv_obj_t *)var, (value*10), NULL);
+}
+
+void button_event_handler2(lv_event_t * e)
+{
+
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+
+
+    if(event_code == LV_EVENT_PRESSING) {
+        lv_obj_set_style_shadow_opa(homeBatteryButton, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_shadow_spread(target, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_opa(target, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+    if(event_code == LV_EVENT_RELEASED || event_code == LV_EVENT_PRESS_LOST) {
+
+        
+
+        lv_anim_t shadow_fade_out;    
+        lv_anim_init(&shadow_fade_out);
+        lv_anim_set_exec_cb(&shadow_fade_out, custom_button_anim2); 
+        lv_anim_set_var(&shadow_fade_out, target); 
+        lv_anim_set_time(&shadow_fade_out, 200);
+        lv_anim_set_values(&shadow_fade_out, 5, 1);
+        lv_anim_start(&shadow_fade_out);   
+
+        
+        if(target == homeBatteryButton){
+            _ui_screen_change(&ui_Battery, LV_SCR_LOAD_ANIM_NONE, 0, 0, NULL);
+        }
+    
+    }
+    
+}
+
+
 
 
 static void add_mask_event_cb(lv_event_t * e)
@@ -57,6 +106,14 @@ static void update_gradient() {
     if (hue == 359) {
         hue = 0; 
     }
+}
+
+static void update_labels(){
+    struct BatteryData battery_data = fetch_battery_data();
+
+    char charge_str[5]; 
+    snprintf(charge_str, sizeof(charge_str), "%d%%", battery_data.relative_state_of_charge);
+	lv_label_set_text(ui_Label_charge, charge_str);
 }
 
 static void update_canvas() {
@@ -152,11 +209,12 @@ void ui_Home_screen_init(void)
     
 
     // Start tasks
-    lv_timer_create(update_canvas, 1000, NULL); 
+    lv_timer_create(update_canvas, 500, NULL); 
+    lv_timer_create(update_labels, 1000, NULL); 
     lv_timer_create(update_gradient, 100, NULL); 
 
     
-    lv_obj_t * stepButton = lv_obj_create(ui_Home);
+    stepButton = lv_obj_create(ui_Home);
     lv_obj_set_width(stepButton, 68);
     lv_obj_set_height(stepButton, 68);
     lv_obj_set_x(stepButton, 40);
@@ -194,20 +252,24 @@ void ui_Home_screen_init(void)
     lv_obj_set_style_text_font(ui_Label3, &roboto_14, LV_PART_MAIN | LV_STATE_DEFAULT);
   
 
-    lv_obj_t * batteryButton = lv_obj_create(ui_Home);
-    lv_obj_set_width(batteryButton, 68);
-    lv_obj_set_height(batteryButton, 68);
-    lv_obj_set_x(batteryButton, -40);
-    lv_obj_set_y(batteryButton, 70);
-    lv_obj_set_align(batteryButton, LV_ALIGN_CENTER);
+    homeBatteryButton = lv_obj_create(ui_Home);
+    lv_obj_set_width(homeBatteryButton, 68);
+    lv_obj_set_height(homeBatteryButton, 68);
+    lv_obj_set_x(homeBatteryButton, -40);
+    lv_obj_set_y(homeBatteryButton, 70);
+    lv_obj_set_align(homeBatteryButton, LV_ALIGN_CENTER);
 
-    lv_obj_set_style_border_color(batteryButton, lv_color_make(66,66,66), NULL);
-    lv_obj_set_style_border_width(batteryButton, 2, NULL);
-    //lv_obj_set_style_border_opa(batteryButton, 50, NULL);
-    lv_obj_set_style_radius(batteryButton, 100, NULL);
-    lv_obj_set_style_bg_opa(batteryButton, 0, NULL);
+    lv_obj_set_style_border_color(homeBatteryButton, lv_color_make(66,66,66), NULL);
+    lv_obj_set_style_border_width(homeBatteryButton, 2, NULL);
+    //lv_obj_set_style_border_opa(homeBatteryButton, 50, NULL);
+    lv_obj_set_style_radius(homeBatteryButton, 100, NULL);
+    lv_obj_set_style_bg_opa(homeBatteryButton, 0, NULL);
 
-    //lv_obj_add_event_cb(stepButton, button_event_handler, LV_EVENT_ALL, NULL);
+    lv_obj_set_style_shadow_color(homeBatteryButton, lv_color_make(66,66,66), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_opa(homeBatteryButton, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_width(homeBatteryButton, 25, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_add_event_cb(homeBatteryButton, button_event_handler2, LV_EVENT_ALL, NULL);
 
     ui_Label_charge = lv_label_create(ui_Home);
     lv_obj_set_width(ui_Label_charge, LV_SIZE_CONTENT);   /// 1

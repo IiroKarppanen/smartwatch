@@ -4,6 +4,11 @@
 // Project name: smartwatch_ui
 
 #include "ui.h"
+#include "../../drivers/gnss/gnss.h"
+
+void update_gps_data(){
+    lv_label_set_text(ui_posLabel, gps_info.nmea_message);
+}
 
 void ui_GpsTest_screen_init(void)
 {
@@ -39,4 +44,6 @@ void ui_GpsTest_screen_init(void)
 
     lv_obj_add_event_cb(ui_GpsTest, ui_event_GpsTest, LV_EVENT_ALL, NULL);
 
+
+    lv_timer_create(update_gps_data, 500, NULL); 
 }

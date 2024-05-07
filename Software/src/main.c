@@ -16,28 +16,76 @@
 #include <lvgl.h>
 #include <ui.h>
 #include <nrfx_clock.h>
-#include <zephyr/drivers/fuel_gauge.h>
+
+
 
 #define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app);
 
 
-#define LVGL_THREAD_STACK_SIZE 15360
+#define LVGL_THREAD_STACK_SIZE 8192
 #define LVGL_THREAD_PRIORITY 1
 
 // LVGL thread
 K_THREAD_STACK_DEFINE(lvgl_thread_stack, LVGL_THREAD_STACK_SIZE);
 struct k_thread lvgl_thread_data;
 
+
+static bool lvgl_task_enabled = true;
+
 // LVGL task
 void lvgl_task(void *p1, void *p2, void *p3)
 {
     while (1) {
-        lv_task_handler();
+        if (lvgl_task_enabled) {
+            lv_task_handler();
+        }
         k_msleep(50);  
     }
 }
+
+
+#define I2C_SLAVE_ADDR_MIN 0x15  // Minimum 7-bit I2C address
+#define I2C_SLAVE_ADDR_MAX 0x99  // Maximum 7-bit I2C address
+
+void i2c_scan(void) {
+    struct device *i2c_dev;
+    int error;
+	int count = 0;
+
+    // Get the I2C device
+	// device_get_binding("UART_0");
+    i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c2));
+    if (!i2c_dev) {
+        printk("Could not find I2C device\n");
+        return;
+    }
+
+    printk("Scanning I2C bus for devices...\n");
+
+    // Iterate over possible 7-bit I2C addresses (0x08 to 0x77)
+    for (int addr = I2C_SLAVE_ADDR_MIN; addr <= I2C_SLAVE_ADDR_MAX; addr++) {
+        uint8_t reg_addr = 0x00;  // Register address to read (dummy for probing)
+        uint8_t rx_data;          // Data read (dummy for probing)
+
+        // Perform a burst read from a register address (0x00) at the device address
+        error = i2c_burst_read(i2c_dev, addr, reg_addr, &rx_data, 1);
+        if (error == 0) {
+            printk("Found device at address 0x%02X\n", addr);
+			count++;
+        }
+		else if (error != -ENODEV) {
+            // Print error only if it's not "device not present" (-ENODEV)
+        }
+    }
+
+    printk("I2C scanning complete\n");
+	printk("Amount of devices: %d\n", count);
+}
+
+
+
 
 
 
@@ -48,6 +96,7 @@ void main(void){
 	SEGGER_RTT_Init();
 	printk("RTT LOG\n\n");
     k_sleep(K_SECONDS(3));
+
 
 	// NRF_CLOCK_HFCLK_DIV_1 - 128Mhz
 	// NRF_CLOCK_HFCLK_DIV_2 - 64Mhz
@@ -62,33 +111,7 @@ void main(void){
 		return;
 	}
 
-	const struct device *const dev = DEVICE_DT_GET_ANY(maxim_max17048);
-	int ret = 0;
-
-	if (dev == NULL) {
-		printk("\nError: no device found.\n");
-		return 0;
-	}
-
-	/*
-
-	if (!device_is_ready(dev)) {
-		printk("\nError: Device \"%s\" is not ready; "
-		       "check the driver initialization logs for errors.\n",
-		       dev->name);
-		return 0;
-	}
-
-	*/
-
-
-
-	printk("Found device \"%s\", getting fuel gauge data\n", dev->name);
-
-	if (dev == NULL) {
-		return 0;
-	}
-
+	
 	// Initialize LVGL
     lv_init();
 	ui_init();
@@ -99,78 +122,16 @@ void main(void){
         LVGL_THREAD_PRIORITY, 0, K_NO_WAIT);
 
 
+
+	//i2c_scan();
+
+
 	while (1) {
 	
 
-		struct fuel_gauge_get_property props[] = {
-			{
-				.property_type = FUEL_GAUGE_RUNTIME_TO_EMPTY,
-			},
-			{
-				.property_type = FUEL_GAUGE_RUNTIME_TO_FULL,
-			},
-			{
-				.property_type = FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE,
-			},
-			{
-				.property_type = FUEL_GAUGE_VOLTAGE,
-			}
-		};
-
-		ret = fuel_gauge_get_prop(dev, props, ARRAY_SIZE(props));
-		if (ret < 0) {
-			printk("Error: cannot get properties\n");
-		} else {
-			if (ret != 0) {
-				printk("Warning: Some properties failed\n");
-			}
-
-			if (props[0].status == 0) {
-				printk("Time to empty %d\n", props[0].value.runtime_to_empty);
-			} else {
-				printk(
-				"Property FUEL_GAUGE_RUNTIME_TO_EMPTY failed with error %d\n",
-				props[0].status
-				);
-			}
-
-			if (props[1].status == 0) {
-				printk("Time to full %d\n", props[1].value.runtime_to_full);
-			} else {
-				printk(
-				"Property FUEL_GAUGE_RUNTIME_TO_FULL failed with error %d\n",
-				props[1].status
-				);
-			}
-
-			if (props[2].status == 0) {
-				printk("Charge %d%%\n", props[2].value.relative_state_of_charge);
-				char charge_str[5];  // Assuming a reasonable size for the string representation
-				snprintf(charge_str, sizeof(charge_str), "%d%%", props[2].value.relative_state_of_charge);
-
-				lv_label_set_text(ui_Label_charge, charge_str);
-
-			} else {
-				printk(
-				"Property FUEL_GAUGE_STATE_OF_CHARGE failed with error %d\n",
-				props[2].status
-				);
-			}
-
-			if (props[3].status == 0) {
-				printk("Voltage %d\n", props[3].value.voltage);
-			} else {
-				printk(
-				"Property FUEL_GAUGE_VOLTAGE failed with error %d\n",
-				props[3].status
-				);
-			}
-		}
-
-		
-		
 		printk("-\n");
 		k_sleep(K_MSEC(1000));
+	
 	}
     
 }
