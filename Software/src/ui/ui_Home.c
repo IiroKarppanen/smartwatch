@@ -12,6 +12,7 @@ LV_FONT_DECLARE(roboto_68);
 
 char timeStr[6]; 
 char dateStr[20]; 
+char charge_str[10]; 
 static uint16_t hue = 0; 
 
 lv_obj_t * canvas;
@@ -99,8 +100,7 @@ static void add_mask_event_cb(lv_event_t * e)
 
 static void update_gradient() {
   
-    lv_color_t new_color = lv_color_hsv_to_rgb(hue, 80, 80);
-    lv_obj_set_style_bg_grad_color(grad, new_color, 0);
+    lv_obj_set_style_bg_grad_color(grad, lv_color_hsv_to_rgb(hue, 80, 80), 0);
 
     hue += 1; 
     if (hue == 359) {
@@ -109,11 +109,11 @@ static void update_gradient() {
 }
 
 static void update_labels(){
-    struct BatteryData battery_data = fetch_battery_data();
+    fetch_battery_data();
 
-    char charge_str[5]; 
     snprintf(charge_str, sizeof(charge_str), "%d%%", battery_data.relative_state_of_charge);
 	lv_label_set_text(ui_Label_charge, charge_str);
+
 }
 
 static void update_canvas() {
@@ -135,13 +135,10 @@ static void update_canvas() {
     lv_canvas_draw_text(canvas, 40, 170, MASK_WIDTH, &label_step_symbol, STEPS_ICON_14);
 
     
-
-
     // Update mask map
-    uint32_t i;
     uint8_t * mask8 = (uint8_t *) mask_map;
     lv_color_t * mask_c = mask_map;
-    for(i = 0; i < MASK_WIDTH * MASK_HEIGHT; i++) {
+    for(uint32_t i = 0; i < MASK_WIDTH * MASK_HEIGHT; i++) {
         mask8[i] = lv_color_brightness(mask_c[i]);
     }
 
@@ -209,8 +206,8 @@ void ui_Home_screen_init(void)
     
 
     // Start tasks
-    lv_timer_create(update_canvas, 500, NULL); 
-    lv_timer_create(update_labels, 1000, NULL); 
+    lv_timer_create(update_canvas, 1000, NULL); 
+    lv_timer_create(update_labels, 3000, NULL); 
     lv_timer_create(update_gradient, 100, NULL); 
 
     

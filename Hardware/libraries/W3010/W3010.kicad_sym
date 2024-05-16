@@ -1,0 +1,74 @@
+
+(kicad_symbol_lib (version 20211014) (generator kicad_symbol_editor)
+  (symbol "W3010" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+    (property "Reference" "E" (id 0) (at 2.03443 0.762912 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Value" "W3010" (id 1) (at 2.16275 -1.01777 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Footprint" "W3010:XCVR_W3010" (id 2) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (property "PARTREV" "L192.C 2/16" (id 4) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (property "MANUFACTURER" "Pulse" (id 5) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (property "MAXIMUM_PACKAGE_HEIGHT" "2mm" (id 6) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (property "STANDARD" "Manufacturer Recommendations" (id 7) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (symbol "W3010_0_0"
+      (polyline
+        (pts (xy -1.397 3.175) (xy 0.0 3.175)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 3.175) (xy 1.397 3.175)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 1.397 3.175) (xy 0.0 0.0)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 0.0) (xy -1.397 3.175)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 3.175) (xy 0.0 0.0)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 0.0) (xy 0.0 -2.54)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 -2.54) (xy -1.27 -2.54)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 0.0 -2.54) (xy 1.27 -2.54)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy -0.762 -3.302) (xy 0.762 -3.302)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy -0.127 -4.064) (xy 0.254 -4.064)) (stroke (width 0.254))
+      )
+      (pin passive line (at -2.54 0.0 0) (length 2.54)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "1"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+      (pin power_in line (at -2.54 -2.54 0) (length 2.54)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "2"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+    )
+  )
+)

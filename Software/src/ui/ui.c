@@ -87,6 +87,8 @@ lv_obj_t * ui_Arc3;
 lv_obj_t * ui_Label5;
 lv_obj_t * ui_Switch1;
 lv_obj_t * ui_Label7;
+lv_obj_t * ui_Label18;
+lv_obj_t * ui_Label19;
 
 
 // SCREEN: ui_Pulse
@@ -366,6 +368,6 @@ void ui_init(void)
     ui_Date_screen_init();
     ui_SensorTest_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_powerManagment);
+    lv_disp_load_scr(ui_Home);
 
 }

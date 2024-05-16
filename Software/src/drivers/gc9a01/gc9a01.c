@@ -14,7 +14,6 @@
 #include <math.h>
 #include <zephyr/logging/log.h>
 #include <inttypes.h>
-#include <ui.h>
 
 LOG_MODULE_REGISTER(gc9a01, CONFIG_DISPLAY_LOG_LEVEL_ERR);
 
@@ -222,16 +221,14 @@ static void gc9a01_set_frame(const struct device *dev, struct gc9a01_frame frame
     gc9a01_write_cmd(dev, ROW_ADDR_SET, data, sizeof(data));
 }
 
-static int gc9a01_blanking_off(const struct device *dev)
+int gc9a01_blanking_off(const struct device *dev)
 {
-    gc9a01_write_cmd(dev, GC9A01A_SLPOUT, NULL, 0);
-    k_msleep(150);
+    return gc9a01_write_cmd(dev, GC9A01A_DISPON, NULL, 0);
 }
 
-static int gc9a01_blanking_on(const struct device *dev)
+int gc9a01_blanking_on(const struct device *dev)
 {
-    gc9a01_write_cmd(dev, GC9A01A_SLPIN, NULL, 0);
-    k_msleep(150);
+    return gc9a01_write_cmd(dev, GC9A01A_DISPOFF, NULL, 0);
 }
 
 static int gc9a01_write(const struct device *dev, const uint16_t x, const uint16_t y,

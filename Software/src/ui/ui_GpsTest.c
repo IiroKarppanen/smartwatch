@@ -7,7 +7,7 @@
 #include "../../drivers/gnss/gnss.h"
 
 void update_gps_data(){
-    lv_label_set_text(ui_posLabel, gps_info.nmea_message);
+   lv_label_set_text(ui_posLabel, gps_info.nmea_message);
 }
 
 void ui_GpsTest_screen_init(void)

@@ -10,6 +10,7 @@ char gz_str[10];
 
 void update_labels(){
 
+    
     snprintf(ax_str, sizeof(ax_str), "AX %d", acc[0].val1);
     snprintf(ay_str, sizeof(ay_str), "AY %d", acc[1].val1);
     snprintf(az_str, sizeof(az_str), "AZ %d", acc[2].val1);

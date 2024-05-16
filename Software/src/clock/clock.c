@@ -12,11 +12,11 @@
 struct tm CurrentTime = 
 {
     .tm_sec = 0,
-    .tm_min = 27,
-    .tm_hour = 9,
-    .tm_wday = 7,
-    .tm_mday = 21,
-    .tm_mon = 3,
+    .tm_min = 45,
+    .tm_hour = 23,
+    .tm_wday = 1,
+    .tm_mday = 13,
+    .tm_mon = 4,
     .tm_year = 24,
 };
 
@@ -162,7 +162,6 @@ void start_clock(void){
             //RV3028_SetTime(&RTC, &CurrentTime);
             RV3028_GetTime(&RTC, &CurrentTime);
             printk("  Current time: %u:%u:%u\n", CurrentTime.tm_hour, CurrentTime.tm_min, CurrentTime.tm_sec);
-            k_sleep(K_MSEC(1000));
 
         }
         else

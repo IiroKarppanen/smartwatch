@@ -12,12 +12,14 @@
 	};
 
 	
+	
 	lvgl_pointer_input: lvgl_pointer {
 		compatible = "zephyr,lvgl-pointer-input";
 		input = <&cst816d>;
 		//swap-xy;
 		//invert-x;
 	};
+	
 
 
 	gpio_fwd: nrf-gpio-forwarder {
@@ -32,6 +34,8 @@
 		extint-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 		forceon-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 		bl-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+		bmi270int1-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+		bmi270int2-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
 	};
 	
 };
@@ -61,7 +65,32 @@
 	status = "disabled";
 };
 
+&button1{
+	status = "disabled";
+};
+
+&button2{
+	status = "disabled";
+};
+
+
+&button3{
+	status = "disabled";
+};
+
+&led0{
+	status = "disabled";
+};
+
+&led1{
+	status = "disabled";
+};
+
 &led2{
+	status = "disabled";
+};
+
+&led3{
 	status = "disabled";
 };
 
@@ -138,9 +167,9 @@
 	label = "I2C_2";
 
 
-	max30101@57 {
+	max30101@95 {
 		compatible = "maxim,max30101";
-		reg = <0x57>;
+		reg = <0x95>;
 		label = "maxim_max30101";
 	};
 

@@ -15,3 +15,5 @@
 
 
 extern bool lvgl_task_enabled;
+extern bool backlight_is_on;
+

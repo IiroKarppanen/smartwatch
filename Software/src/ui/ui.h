@@ -84,6 +84,8 @@ extern lv_obj_t * ui_Arc3;
 extern lv_obj_t * ui_Label5;
 extern lv_obj_t * ui_Switch1;
 extern lv_obj_t * ui_Label7;
+extern lv_obj_t * ui_Label18;
+extern lv_obj_t * ui_Label19;
 // SCREEN: ui_Pulse
 void ui_Pulse_screen_init(void);
 void ui_event_Pulse(lv_event_t * e);

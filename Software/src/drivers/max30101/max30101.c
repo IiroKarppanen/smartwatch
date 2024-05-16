@@ -38,18 +38,18 @@ void init_max30101(){
 
 	if (hr_sensor == NULL) {
 		printk("Could not get max30101 device\n");
-		return 0;
+		//return 0;
 	}
 
 	
 	if (!device_is_ready(hr_sensor)) {
 		printk("max30101 device %s is not ready\n", hr_sensor->name);
-		return 0;
+		//return 0;
 	}
 
 	k_sleep(K_MSEC(5000));
 	printk("MAX30101 init complete\n");
-	fetch_pulse();
+	//fetch_pulse();
 }
 
 void fetch_pulse(){
@@ -132,4 +132,4 @@ static const struct sensor_driver_api max30101_driver_api = {
     .sample_fetch = fetch_pulse
 };
 
-SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);
+//SYS_INIT(init_max30101, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY);

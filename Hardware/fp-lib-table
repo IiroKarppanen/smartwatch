@@ -18,4 +18,6 @@
   (lib (name "X05A20L15T")(type "KiCad")(uri "${KIPRJMOD}/libraries/X05A20L15T/X05A20L15T.pretty")(options "")(descr ""))
   (lib (name "MAX30101EFD_T")(type "KiCad")(uri "${KIPRJMOD}/libraries/MAX30101EFD_T")(options "")(descr ""))
   (lib (name "TPS70950QDRVRQ1")(type "KiCad")(uri "${KIPRJMOD}/libraries/TPS70950QDRVRQ1/TPS70950QDRVRQ1.pretty")(options "")(descr ""))
+  (lib (name "W3010")(type "KiCad")(uri "${KIPRJMOD}/libraries/W3010")(options "")(descr ""))
+  (lib (name "MIA-M10Q-00B")(type "KiCad")(uri "${KIPRJMOD}/libraries/MIA-M10Q-00B/MIA-M10Q-00B.pretty")(options "")(descr ""))
 )

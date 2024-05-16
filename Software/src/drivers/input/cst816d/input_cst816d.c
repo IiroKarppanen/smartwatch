@@ -13,7 +13,7 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/pm/device.h>
-//#include "../../sensor_data/sensor_data.h"
+#include "../../display_control/display_control.h"
 
 #define CST816S_CHIP_ID                 0xB4
 
@@ -118,6 +118,8 @@ struct cst816d_output {
 
 static int cst816d_process(const struct device *dev)
 {
+
+	
 	uint8_t event;
 	uint16_t row, col;
 	bool is_pressed;
@@ -140,6 +142,10 @@ static int cst816d_process(const struct device *dev)
 
 	event = (output.x & 0xff) >> CST816S_EVENT_BITS_POS;
 	is_pressed = (event == EVENT_CONTACT);
+
+	if(is_pressed && backlight_is_on){
+		//reset_display_timer();
+	}
 
 	if (is_pressed) {
 		// These events are generated for the LVGL touch implementation.
@@ -314,6 +320,8 @@ static int cst816d_pm_action(const struct device *dev, enum pm_device_action act
 	return status;
 }
 #endif
+
+
 
 #define CST816D_DEFINE(index)                                                                       \
 	static struct cst816d_data cst816d_data_##index;                                                \

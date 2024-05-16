@@ -22,7 +22,9 @@ void measurement_task(){
 		sensor_channel_get(bmi270, SENSOR_CHAN_ACCEL_XYZ, acc);
 		sensor_channel_get(bmi270, SENSOR_CHAN_GYRO_XYZ, gyr);
 
-        k_msleep(50);  
+        k_msleep(100);  
+
+		printk("sensor task az: %d\n", acc[2].val1);
 		
     }
 }
