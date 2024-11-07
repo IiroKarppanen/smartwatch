@@ -1,5 +1,5 @@
 ## Features
-- NRF5340 SoC
+- nRF5340 SoC
 - 240x240 LCD display
 - Pulseoximetry
 - GNSS
