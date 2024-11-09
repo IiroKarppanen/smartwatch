@@ -4,6 +4,7 @@
 - Pulseoximetry
 - GNSS
 - Accelometer & Gyroscope
+- Accurate RTC with backup battery
 
 
 ![Näyttökuva 2024-11-07 140855](https://github.com/user-attachments/assets/3e4a0493-effa-4a43-9a98-7e726a1ff0f7)
